@@ -1,5 +1,4 @@
 using JDPodrozeAPI.Core.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace JDPodrozeAPI
 {

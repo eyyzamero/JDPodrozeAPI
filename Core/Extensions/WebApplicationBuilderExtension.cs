@@ -4,6 +4,13 @@ using Amazon.Runtime;
 using FluentValidation;
 using JDPodrozeAPI.Controllers.Account.Contracts.Requests;
 using JDPodrozeAPI.Controllers.Account.Contracts.Requests.Validators;
+using JDPodrozeAPI.Controllers.Contact.Contracts.Requests;
+using JDPodrozeAPI.Controllers.Contact.Validators;
+using JDPodrozeAPI.Controllers.Excursions.Contracts.Requests;
+using JDPodrozeAPI.Controllers.Excursions.Validators;
+using JDPodrozeAPI.Controllers.Newsletter.Contracts.Requests;
+using JDPodrozeAPI.Controllers.Newsletter.Validators;
+using JDPodrozeAPI.Core.Contexts;
 using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.Contexts.Users;
 using JDPodrozeAPI.Core.Models.Configuration;
@@ -11,6 +18,7 @@ using JDPodrozeAPI.Core.Models.Configuration.ParameterStore.Credentials;
 using JDPodrozeAPI.Core.Services.Cryptography;
 using JDPodrozeAPI.Core.Services.JWT;
 using JDPodrozeAPI.Core.Validation.Extensions;
+using JDPodrozeAPI.Services;
 using JDPodrozeAPI.Services.Account;
 using JDPodrozeAPI.Services.Excursions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +71,8 @@ namespace JDPodrozeAPI.Core.Extensions
         {
             builder.Services.AddDatabaseContext<UsersDbContext>();
             builder.Services.AddDatabaseContext<ExcursionsDbContext>();
+            builder.Services.AddDatabaseContext<NewsletterDbContext>();
+            builder.Services.AddDatabaseContext<ContactDbContext>();
         }
 
         public static void InitServices(this WebApplicationBuilder builder)
@@ -140,12 +150,19 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddSingleton<ICryptographyService, CryptographyService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IExcursionsService, ExcursionsService>();
+            builder.Services.AddScoped<IOrdersService, OrdersService>();
+            builder.Services.AddScoped<IEmailsService, EmailsService>();
+            builder.Services.AddScoped<INewsletterService, NewsletterService>();
+            builder.Services.AddScoped<IContactService, ContactService>();
         }
 
         public static void AddValidators(this WebApplicationBuilder builder)
         {
             builder.Services.AddTransient<IValidator<AccountLoginReq>, AccountLoginReqValidator>();
             builder.Services.AddTransient<IValidator<AccountRegisterReq>, AccountRegisterReqValidator>();
+            builder.Services.AddTransient<IValidator<ExcursionsEnrollReq>, ExcursionsEnrollReqValidator>();
+            builder.Services.AddTransient<IValidator<NewsletterEnrollReq>, NewsletterEnrollReqValidator>();
+            builder.Services.AddTransient<IValidator<ContactReq>, ContactReqValidator>();
         }
     }
 }

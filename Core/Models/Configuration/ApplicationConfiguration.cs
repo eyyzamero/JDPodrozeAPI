@@ -2,6 +2,7 @@
 using JDPodrozeAPI.Core.Models.Configuration.ParameterStore;
 using JDPodrozeAPI.Core.Models.Configuration.Database;
 using JDPodrozeAPI.Core.Models.Configuration.Cryptography;
+using JDPodrozeAPI.Core.Models.Configuration.SMTP;
 
 namespace JDPodrozeAPI.Core.Models.Configuration
 {
@@ -11,5 +12,6 @@ namespace JDPodrozeAPI.Core.Models.Configuration
         public ApplicationConfigurationAuthentication Authentication { get; init; }
         public ApplicationConfigurationDatabase Database { get; init; }
         public ApplicationConfigurationCryptography Cryptography { get; init; }
+        public ApplicationConfigurationSMTP SMTP { get; init; }
     }
 }

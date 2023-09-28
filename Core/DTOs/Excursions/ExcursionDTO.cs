@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using JDPodrozeAPI.Core.DTOs.Excursions;
+using System.ComponentModel.DataAnnotations;
 
 namespace JDPodrozeAPI.Core.DTOs
 {
@@ -24,5 +25,9 @@ namespace JDPodrozeAPI.Core.DTOs
         public decimal PriceGross { get; set; }
 
         public decimal PriceNet { get; set; }
+        public bool Discount { get; set; }
+        public decimal DiscountPriceGross { get; set; }
+        public List<ExcursionImageDTO> Images { get; set; }
+        public virtual List<ExcursionOrderDTO> Orders { get; set; }
     }
 }
