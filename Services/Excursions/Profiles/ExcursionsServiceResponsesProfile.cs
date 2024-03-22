@@ -17,8 +17,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
             CreateMap<List<ExcursionDTO>, ExcursionsServiceGetListShortRes>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
 
-            CreateMap<ExcursionImageDTO, ExcursionsServiceGetImageRes>()
-                .ForMember(dest => dest.RawImageBytes, opt => opt.MapFrom(src => src.ImageData));
+            CreateMap<ExcursionImageDTO, ExcursionsServiceGetImageRes>();
 
             CreateMap<ExcursionImageDTO, ExcursionsServiceGetListItemImageRes>();
 
@@ -28,8 +27,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
             CreateMap<List<ExcursionDTO>, ExcursionsServiceGetListRes>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
 
-            CreateMap<ExcursionImageDTO, ExcursionsServiceGetItemImageRes>()
-                .ForMember(dest => dest.Base64, opt => opt.MapFrom(src => Convert.ToBase64String(src.ImageData)));
+            CreateMap<ExcursionImageDTO, ExcursionsServiceGetItemImageRes>();
 
             CreateMap<ExcursionDTO, ExcursionsServiceGetItemRes>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.PriceGross))

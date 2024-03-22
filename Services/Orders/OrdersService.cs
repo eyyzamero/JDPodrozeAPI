@@ -24,7 +24,12 @@ namespace JDPodrozeAPI.Services
 
         public List<OrdersServiceGetListItemRes> GetList()
         {
-            List<ExcursionDTO> list = _excursionsDbContext.Excursions.Include(x => x.Orders).ThenInclude(x => x.Participants).OrderBy(x => x.DateFrom).ToList();
+            List<ExcursionDTO> list = _excursionsDbContext.Excursions
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.Participants)
+                .OrderBy(x => x.DateFrom)
+                .Where(x => x.Orders.Any())
+                .ToList();
             List<OrdersServiceGetListItemRes> serviceRes = _mapper.Map<List<OrdersServiceGetListItemRes>>(list);
             return serviceRes;
         }

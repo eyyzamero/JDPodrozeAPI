@@ -10,8 +10,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
     {
         public ExcursionsServiceRequestsProfile()
         {
-            CreateMap<ExcursionsServiceAddImageReq, ExcursionImageDTO>()
-                .ForMember(dest => dest.ImageData, opt => opt.MapFrom(src => Convert.FromBase64String(src.Base64)));
+            CreateMap<ExcursionsServiceAddImageReq, ExcursionImageDTO>();
 
             CreateMap<ExcursionsServiceAddReq, ExcursionDTO>()
                 .ForMember(dest => dest.PriceGross, opt => opt.MapFrom(src => src.Price))
@@ -19,8 +18,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
                 .ForMember(dest => dest.PriceNet, opt => opt.MapFrom(src => 0))
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
-            CreateMap<ExcursionsServiceEditImageReq, ExcursionImageDTO>()
-                .ForMember(dest => dest.ImageData, opt => opt.MapFrom(src => Convert.FromBase64String(src.Base64)));
+            CreateMap<ExcursionsServiceEditImageReq, ExcursionImageDTO>();
 
             CreateMap<ExcursionsServiceEditReq, ExcursionDTO>()
                 .ForMember(dest => dest.PriceGross, opt => opt.MapFrom(src => src.Price))
@@ -36,7 +34,6 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
                 .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => (char) PaymentStatus.NOT_PAID))
                 .ForMember(dest => dest.Excursion, opt => opt.Ignore())
                 .ForMember(dest => dest.Participants, opt => opt.Ignore());
-                //.ForMember(dest => dest.Booker, opt => opt.Ignore());
         }
     }
 }

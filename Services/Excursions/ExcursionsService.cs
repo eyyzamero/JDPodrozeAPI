@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using JDPodrozeAPI.Controllers.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Core.Enums;
 using JDPodrozeAPI.Services.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Services.Excursions.Contracts.Responses;
-using JDPodrozeAPI.Services.Excursions.Exceptions;
+using JDPodrozeAPI.Services.Excursions.Enums;
 using JDPodrozeAPI.Services.Orders;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
 
 namespace JDPodrozeAPI.Services.Excursions
 {
@@ -18,24 +18,43 @@ namespace JDPodrozeAPI.Services.Excursions
         private readonly IMapper _mapper;
         private readonly ExcursionsDbContext _excursionsDbContext;
         private readonly IEmailsService _emailsService;
+        private readonly IImagesService _imagesService;
 
-        public ExcursionsService(IMapper mapper, ExcursionsDbContext excursionsDbContext, IEmailsService emailsService)
+        public ExcursionsService(IMapper mapper, ExcursionsDbContext excursionsDbContext, IEmailsService emailsService, IImagesService imagesService)
         {
             _mapper = mapper;
             _excursionsDbContext = excursionsDbContext;
             _emailsService = emailsService;
+            _imagesService = imagesService;
         }
 
-        public async Task<IExcursionsServiceGetImageRes> GetImage(int fileId)
+        public async Task<byte[]> GetImageNew(int fileId, string resolution, string extension)
         {
-            ExcursionImageDTO image = await _excursionsDbContext.ExcursionsImages.FirstOrDefaultAsync(x => x.Id == fileId) ?? throw new ImageNotFoundException();
-            IExcursionsServiceGetImageRes response = _mapper.Map<ExcursionsServiceGetImageRes>(image);
+            byte[] response = await _imagesService.GetImageAsync("Excursions", fileId, resolution, extension);
             return response;
         }
 
-        public IExcursionsServiceGetListRes GetList()
+        public IExcursionsServiceGetListRes GetList(IExcursionsGetListReq request)
         {
-            List<ExcursionsServiceGetListItemRes> excursions = _excursionsDbContext.Excursions.Include(x => x.Images).ProjectTo<ExcursionsServiceGetListItemRes>(_mapper.ConfigurationProvider).ToList();
+            IQueryable<ExcursionDTO> excursionsQuery = _excursionsDbContext.Excursions
+                .Include(x => x.Images);
+
+            if (request.Active != null)
+                excursionsQuery = excursionsQuery.Where(excursion => (bool) request.Active ? excursion.Active : !excursion.Active);
+
+            switch(request.Sort)
+            {
+                case ExcursionsSortType.DATE_FROM:
+                    excursionsQuery = excursionsQuery.OrderBy(excursion => excursion.DateFrom);
+                    break;
+                case ExcursionsSortType.DATE_TO:
+                    excursionsQuery = excursionsQuery.OrderBy(excursion => excursion.DateTo);
+                    break;
+            }
+
+            List<ExcursionsServiceGetListItemRes> excursions = excursionsQuery
+                .ProjectTo<ExcursionsServiceGetListItemRes>(_mapper.ConfigurationProvider)
+                .ToList();
 
             foreach (ExcursionsServiceGetListItemRes excursion in excursions)
                 excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
@@ -55,7 +74,7 @@ namespace JDPodrozeAPI.Services.Excursions
             return response;
         }
 
-        public IExcursionsServiceGetItemRes? GetItem(int id)
+        public async Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images)
         {
             IExcursionsServiceGetItemRes? response = null;
             ExcursionDTO? excursion = _excursionsDbContext.Excursions.Include(x => x.Images).SingleOrDefault(x => x.Id == id);
@@ -64,41 +83,63 @@ namespace JDPodrozeAPI.Services.Excursions
             {
                 excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
                 response = _mapper.Map<ExcursionsServiceGetItemRes>(excursion);
+
+                if (images)
+                {
+                    foreach (var image in response.Images)
+                    {
+                        byte[] imageBytes = await _imagesService.GetImageAsync("Excursions", image.Id, "HD", "png");
+                        image.Base64 = Convert.ToBase64String(imageBytes);
+                    }
+                }
             }
             return response;
         }
 
-        public void Add(ExcursionsServiceAddReq request)
+        public async Task Add(ExcursionsServiceAddReq request)
         {
             ExcursionDTO excursion = _mapper.Map<ExcursionDTO>(request);
+
             _excursionsDbContext.Excursions.Add(excursion);
             _excursionsDbContext.SaveChanges();
 
+            List<ExcursionImageDTO> images = new();
+
             for (int i = 0; i < request.Images.Count; i++)
             {
-                ExcursionImageDTO mappedImage = _mapper.Map<ExcursionImageDTO>(request.Images[i]);
+                ExcursionsServiceAddImageReq image = request.Images[i];
+
+                ExcursionImageDTO mappedImage = _mapper.Map<ExcursionImageDTO>(image);
                 mappedImage.ExcursionId = excursion.Id;
-                mappedImage.ImageData = ResizeImageBase64(mappedImage.ImageData);
                 mappedImage.Order = i + 1;
+
                 _excursionsDbContext.ExcursionsImages.Add(mappedImage);
+                images.Add(mappedImage);
             }
+
             _excursionsDbContext.SaveChanges();
+
+            for (int i = 0; i < images.Count; i++)
+            {
+                ExcursionImageDTO image = images[i];
+                byte[] imageBytes = Convert.FromBase64String(request.Images[i].Base64);
+                await _imagesService.ProcessImageAsync(imageBytes, $"Excursions", $"{image.Id}");
+            }
         }
 
-        public void Edit(ExcursionsServiceEditReq request)
+        public async Task Edit(ExcursionsServiceEditReq request)
         {
             ExcursionDTO excursion = _mapper.Map<ExcursionDTO>(request);
             _excursionsDbContext.Excursions.Update(excursion);
-            _excursionsDbContext.SaveChanges();
+            await _excursionsDbContext.SaveChangesAsync();
 
-            _DeleteMarkedImages(request);
-            _excursionsDbContext.SaveChanges();
+            await _DeleteMarkedImages(request);
+            await _excursionsDbContext.SaveChangesAsync();
 
-            _AddNewImages(request, excursion.Id);
-            _excursionsDbContext.SaveChanges();
+            await _AddNewImages(request, excursion.Id);
 
             _UpdateImagesOrder(request);
-            _excursionsDbContext.SaveChanges();
+            await _excursionsDbContext.SaveChangesAsync();
         }
 
         public void Delete(int id)
@@ -162,65 +203,40 @@ namespace JDPodrozeAPI.Services.Excursions
             return order.OrderId;
         }
 
-        public byte[] ResizeImageBase64(byte[] imageBytes)
+        private async Task _DeleteMarkedImages(ExcursionsServiceEditReq request)
         {
-            using (var ms = new MemoryStream(imageBytes))
+            List<int> idsToDelete = request.Images.Where(x => x.Deleted).Select(x => x.Id).ToList();
+            List<ExcursionImageDTO> imagesToDelete = _excursionsDbContext.ExcursionsImages.Where(x => idsToDelete.Contains(x.Id))?.ToList() ?? new();
+
+            if (imagesToDelete.Any())
             {
-                Image img = Image.FromStream(ms);
+                _excursionsDbContext.ExcursionsImages.RemoveRange(imagesToDelete);
 
-                int originalWidth = img.Width;
-                int originalHeight = img.Height;
-                int newWidth;
-                int newHeight;
-
-                double targetRatio = 16.0 / 9.0;
-                double originalImageRatio = originalWidth / originalHeight;
-
-                if (originalImageRatio > targetRatio)
-                {
-                    newWidth = 1280;
-                    newHeight = (int)(newWidth / originalImageRatio);
-                }
-                else
-                {
-                    newHeight = 720;
-                    newWidth = (int)(newHeight * originalImageRatio);
-                }
-
-                var newImage = new Bitmap(newWidth, newHeight);
-
-                using (var graphics = Graphics.FromImage(newImage))
-                {
-                    graphics.DrawImage(img, 0, 0, newWidth, newHeight);
-                }
-
-                using (var mstream = new MemoryStream())
-                {
-                    newImage.Save(mstream, img.RawFormat);
-                    byte[] imageArray = mstream.ToArray();
-
-                    return imageArray;
-                }
+                foreach (ExcursionImageDTO image in imagesToDelete)
+                    await _imagesService.DeleteImagesAsync("Excursions", image.Id);
             }
         }
 
-        private void _DeleteMarkedImages(ExcursionsServiceEditReq request)
+        private async Task _AddNewImages(ExcursionsServiceEditReq request, int excursionId)
         {
-            List<int> idsToDelete = request.Images.Where(x => x.Deleted).Select(x => x.Id).ToList();
-            List<ExcursionImageDTO> imagesToDelete = _excursionsDbContext.ExcursionsImages.Where(x => idsToDelete.Contains(x.Id)).ToList();
+            request.Images = request.Images.Where(x => x.Id == 0 && !x.Deleted).ToList();
+            List<ExcursionImageDTO> images = new();
 
-            if (imagesToDelete.Any())
-                _excursionsDbContext.ExcursionsImages.RemoveRange(imagesToDelete);
-        }
-
-        private void _AddNewImages(ExcursionsServiceEditReq request, int excursionId)
-        {
-            foreach (var imageReq in request.Images.Where(x => x.Id == 0 && !x.Deleted))
+            foreach (var imageReq in request.Images)
             {
                 ExcursionImageDTO mappedImage = _mapper.Map<ExcursionImageDTO>(imageReq);
                 mappedImage.ExcursionId = excursionId;
-                mappedImage.ImageData = ResizeImageBase64(mappedImage.ImageData);
                 _excursionsDbContext.ExcursionsImages.Add(mappedImage);
+                images.Add(mappedImage);
+            }
+
+            await _excursionsDbContext.SaveChangesAsync();
+
+            for(var i = 0; i < images.Count; i++)
+            {
+                ExcursionImageDTO image = images[i];
+                byte[] imageBytes = Convert.FromBase64String(request.Images[i].Base64);
+                await _imagesService.ProcessImageAsync(imageBytes, $"Excursions", $"{image.Id}");
             }
         }
 

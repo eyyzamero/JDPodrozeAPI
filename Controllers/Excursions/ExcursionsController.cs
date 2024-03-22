@@ -6,7 +6,6 @@ using JDPodrozeAPI.Services.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Services.Excursions.Contracts.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using System.Net;
 
 namespace JDPodrozeAPI.Controllers.Excursions
@@ -24,29 +23,39 @@ namespace JDPodrozeAPI.Controllers.Excursions
             _excursionsService = excursionsService;
         }
 
-        [HttpGet("GetImage/{fileId}")]
+        [HttpGet("GetImageNew/{fileId}/{resolution}/{extension}")]
         [ProducesResponseType(typeof(FileContentResult), (int) HttpStatusCode.OK)]
         [ResponseCache(Duration = 2592000, Location = ResponseCacheLocation.Client)]
-        public async Task<FileContentResult> GetImage(int fileId)
+        public async Task<FileContentResult> GetImageNew(int fileId, string resolution, string extension)
         {
-            IExcursionsServiceGetImageRes? serviceResponse = await _excursionsService.GetImage(fileId);
-            return File(serviceResponse.RawImageBytes, $"image/{serviceResponse.Type}", serviceResponse.Name);
+            byte[] imageBytes = await _excursionsService.GetImageNew(fileId, resolution, extension);
+            return File(imageBytes, $"image/{extension}", $"{fileId}");
         }
 
         [HttpGet("GetItem/{id}")]
         [ProducesResponseType(typeof(IExcursionsGetItemRes), (int) HttpStatusCode.OK)]
-        public IActionResult GetItem(int id)
+        public async Task<IActionResult> GetItem(int id)
         {
-            IExcursionsServiceGetItemRes? serviceResponse = _excursionsService.GetItem(id);
+            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id, false);
             IExcursionsGetItemRes response = _mapper.Map<ExcursionsGetItemRes>(serviceResponse);
             return Ok(response);
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
-        [HttpGet("GetList")]
-        public IActionResult GetList()
+        [HttpGet("GetItemWithImages/{id}")]
+        [ProducesResponseType(typeof(IExcursionsGetItemRes), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetItemWithImages(int id)
         {
-            var response = _excursionsService.GetList();
+            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id, true);
+            IExcursionsGetItemRes response = _mapper.Map<ExcursionsGetItemRes>(serviceResponse);
+            return Ok(response);
+        }
+
+        [Authorize(Roles = "ADMINISTRATOR")]
+        [HttpPost("GetList")]
+        public IActionResult GetList([FromBody] ExcursionsGetListReq request)
+        {
+            var response = _excursionsService.GetList(request);
             return Ok(response);
         }
 
@@ -62,20 +71,20 @@ namespace JDPodrozeAPI.Controllers.Excursions
         [Authorize(Roles = "ADMINISTRATOR")]
         [HttpPost("Add")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
-        public IActionResult Add([FromBody] ExcursionsAddReq request)
+        public async Task<IActionResult> Add([FromBody] ExcursionsAddReq request)
         {
             ExcursionsServiceAddReq serviceRequest = _mapper.Map<ExcursionsServiceAddReq>(request);
-            _excursionsService.Add(serviceRequest);
+            await _excursionsService.Add(serviceRequest);
             return Ok();
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
         [HttpPost("Edit")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
-        public IActionResult Edit([FromBody] ExcursionsEditReq request)
+        public async Task<IActionResult> Edit([FromBody] ExcursionsEditReq request)
         {
             ExcursionsServiceEditReq serviceRequest = _mapper.Map<ExcursionsServiceEditReq>(request);
-            _excursionsService.Edit(serviceRequest);
+            await _excursionsService.Edit(serviceRequest);
             return Ok();
         }
 
@@ -84,7 +93,7 @@ namespace JDPodrozeAPI.Controllers.Excursions
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public IActionResult Enroll([FromBody] ExcursionsEnrollReq request)
         {
-            IExcursionsServiceEnrollReq serviceRequest = _mapper.Map<ExcursionsServiceEnrollReq>(request);
+            ExcursionsServiceEnrollReq serviceRequest = _mapper.Map<ExcursionsServiceEnrollReq>(request);
             Guid? serviceResponse = _excursionsService.Enroll(serviceRequest);
             return Ok(serviceResponse);
         }
