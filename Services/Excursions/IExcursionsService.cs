@@ -12,6 +12,7 @@ namespace JDPodrozeAPI.Services.Excursions
         public IExcursionsServiceGetListShortRes GetListShort();
         public Task Add(ExcursionsServiceAddReq request);
         public Task Edit(ExcursionsServiceEditReq request);
+        public Task ChangeToTemplate(int id);
         public void Delete(int id);
         public Guid? Enroll(IExcursionsServiceEnrollReq request);
     }

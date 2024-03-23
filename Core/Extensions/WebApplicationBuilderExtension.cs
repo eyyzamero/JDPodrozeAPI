@@ -8,6 +8,7 @@ using JDPodrozeAPI.Controllers.Contact.Contracts.Requests;
 using JDPodrozeAPI.Controllers.Contact.Validators;
 using JDPodrozeAPI.Controllers.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Controllers.Excursions.Validators;
+using JDPodrozeAPI.Controllers.Excursions.Validators.Enroll;
 using JDPodrozeAPI.Controllers.Newsletter.Contracts.Requests;
 using JDPodrozeAPI.Controllers.Newsletter.Validators;
 using JDPodrozeAPI.Core.Contexts;
@@ -164,6 +165,7 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddTransient<IValidator<ExcursionsEnrollReq>, ExcursionsEnrollReqValidator>();
             builder.Services.AddTransient<IValidator<NewsletterEnrollReq>, NewsletterEnrollReqValidator>();
             builder.Services.AddTransient<IValidator<ContactReq>, ContactReqValidator>();
+            builder.Services.AddTransient<IValidator<ExcursionsGetListReq>, ExcursionsGetListReqValidator>();
         }
     }
 }

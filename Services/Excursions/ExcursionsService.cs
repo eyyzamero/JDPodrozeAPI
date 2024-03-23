@@ -37,7 +37,11 @@ namespace JDPodrozeAPI.Services.Excursions
         public IExcursionsServiceGetListRes GetList(IExcursionsGetListReq request)
         {
             IQueryable<ExcursionDTO> excursionsQuery = _excursionsDbContext.Excursions
-                .Include(x => x.Images);
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.Participants)
+                .Include(x => x.Images)
+                .Where(x => !x.IsDeleted)
+                .Where(x => x.IsTemplate == request.Templates);
 
             if (request.Active != null)
                 excursionsQuery = excursionsQuery.Where(excursion => (bool) request.Active ? excursion.Active : !excursion.Active);
@@ -52,12 +56,12 @@ namespace JDPodrozeAPI.Services.Excursions
                     break;
             }
 
-            List<ExcursionsServiceGetListItemRes> excursions = excursionsQuery
-                .ProjectTo<ExcursionsServiceGetListItemRes>(_mapper.ConfigurationProvider)
-                .ToList();
+            List<ExcursionsServiceGetListItemRes> excursions = _mapper.Map<List<ExcursionsServiceGetListItemRes>>(excursionsQuery.ToList());
 
             foreach (ExcursionsServiceGetListItemRes excursion in excursions)
+            {
                 excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
+            }
 
             IExcursionsServiceGetListRes response = new ExcursionsServiceGetListRes { Items = excursions };
             return response;
@@ -65,7 +69,11 @@ namespace JDPodrozeAPI.Services.Excursions
 
         public IExcursionsServiceGetListShortRes GetListShort()
         {
-            IList<ExcursionDTO> excursions = _excursionsDbContext.Excursions.Where(x => x.Active).OrderBy(x => x.DateFrom).ToList();
+            IList<ExcursionDTO> excursions = _excursionsDbContext.Excursions
+                .Where(x => x.Active && !x.IsTemplate && !x.IsDeleted)
+                .OrderBy(x => x.DateFrom)
+                .ToList();
+            
             IExcursionsServiceGetListShortRes response = _mapper.Map<ExcursionsServiceGetListShortRes>(excursions);
 
             foreach (var excursion in response.Items)
@@ -139,6 +147,15 @@ namespace JDPodrozeAPI.Services.Excursions
             await _AddNewImages(request, excursion.Id);
 
             _UpdateImagesOrder(request);
+            await _excursionsDbContext.SaveChangesAsync();
+        }
+
+        public async Task ChangeToTemplate(int id)
+        {
+            ExcursionDTO excursion = await _excursionsDbContext.Excursions.SingleAsync(x => x.Id == id);
+            excursion.IsTemplate = true;
+
+            _excursionsDbContext.Excursions.Update(excursion);
             await _excursionsDbContext.SaveChangesAsync();
         }
 

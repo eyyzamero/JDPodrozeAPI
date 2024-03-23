@@ -41,5 +41,13 @@ namespace JDPodrozeAPI.Controllers.Account
             IAccountRegisterRes response = _mapper.Map<AccountRegisterRes>(serviceResponse);
             return Ok(response);
         }
+
+        [HttpPost("IsLoginAvailable")]
+        [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> IsLoginAvailable([FromBody] AccountIsLoginAvailableReq request)
+        {
+            bool response = await _accountService.IsLoginAvailable(request.Login);
+            return Ok(response);
+        }
     }
 }

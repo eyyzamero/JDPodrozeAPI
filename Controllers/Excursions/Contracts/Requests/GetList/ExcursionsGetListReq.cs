@@ -6,5 +6,6 @@ namespace JDPodrozeAPI.Controllers.Excursions.Contracts.Requests
     {
         public ExcursionsSortType Sort { get; set; }
         public bool? Active { get; set; }
+        public bool? Templates { get; set; }
     }
 }

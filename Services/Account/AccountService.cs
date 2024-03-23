@@ -5,6 +5,7 @@ using JDPodrozeAPI.Core.Services.Cryptography;
 using JDPodrozeAPI.Core.Services.JWT;
 using JDPodrozeAPI.Services.Account.Contracts.Requests;
 using JDPodrozeAPI.Services.Account.Contracts.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace JDPodrozeAPI.Services.Account
 {
@@ -51,6 +52,12 @@ namespace JDPodrozeAPI.Services.Account
                 response.Token = _CreateToken(user);
 
             return response;
+        }
+
+        public async Task<bool> IsLoginAvailable(string login)
+        {
+            bool response = await _usersDbContext.Users.AnyAsync(x => x.Login.ToLower() == login.Trim().ToLower());
+            return !response;
         }
 
         private string _CreateToken(UserDTO user)

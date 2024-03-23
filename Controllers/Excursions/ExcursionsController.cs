@@ -88,6 +88,15 @@ namespace JDPodrozeAPI.Controllers.Excursions
             return Ok();
         }
 
+        [Authorize(Roles = "ADMINISTRATOR")]
+        [HttpGet("ChangeToTemplate/{id}")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        public async Task<IActionResult> ChangeToTemplate(int id)
+        {
+            await _excursionsService.ChangeToTemplate(id);
+            return Ok();
+        }
+
         [HttpPost("Enroll")]
         [ProducesResponseType(typeof(Guid?), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]

@@ -7,5 +7,6 @@ namespace JDPodrozeAPI.Services.Account
     {
         string? TryToLogin(IAccountServiceLoginReq request);
         IAccountServiceRegisterRes Register(IAccountServiceRegisterReq request);
+        Task<bool> IsLoginAvailable(string login);
     }
 }
