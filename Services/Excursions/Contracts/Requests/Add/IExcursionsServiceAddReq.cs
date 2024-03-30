@@ -14,6 +14,7 @@
 
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+        public bool IsTemplate { get; set; }
         public List<ExcursionsServiceAddImageReq> Images { get; set; }
     }
 }

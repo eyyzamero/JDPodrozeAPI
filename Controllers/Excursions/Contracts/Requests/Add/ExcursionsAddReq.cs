@@ -13,6 +13,7 @@
         public int Seats { get; set; }
         public string? DateFrom { get; set; }
         public string? DateTo { get; set; }
+        public bool IsTemplate { get; set; }
         public List<ExcursionsAddImageReq> Images { get; set; }
     }
 }

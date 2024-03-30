@@ -13,6 +13,7 @@
         public decimal Price { get; set; }
         public bool Discount { get; set; }
         public decimal DiscountPrice { get; set; }
+        public int Seats { get; set; }
         public List<ExcursionsServiceGetItemImageRes> Images { get; set; }
     }
 }

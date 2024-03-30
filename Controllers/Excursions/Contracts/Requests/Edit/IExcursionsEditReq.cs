@@ -13,6 +13,7 @@
         public decimal DiscountPrice { get; set; }
         public string? DateFrom { get; set; }
         public string? DateTo { get; set; }
+        public bool IsTemplate { get; set; }
         public List<ExcursionsEditImageReq> Images { get; set; }
     }
 }
