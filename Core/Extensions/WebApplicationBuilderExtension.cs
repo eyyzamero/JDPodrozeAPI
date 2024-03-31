@@ -74,6 +74,7 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddDatabaseContext<ExcursionsDbContext>();
             builder.Services.AddDatabaseContext<NewsletterDbContext>();
             builder.Services.AddDatabaseContext<ContactDbContext>();
+            builder.Services.AddDatabaseContext<VisitsDbContext>();
         }
 
         public static void InitServices(this WebApplicationBuilder builder)
@@ -115,6 +116,7 @@ namespace JDPodrozeAPI.Core.Extensions
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -156,6 +158,7 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddScoped<INewsletterService, NewsletterService>();
             builder.Services.AddScoped<IContactService, ContactService>();
             builder.Services.AddScoped<IImagesService, ImagesService>();
+            builder.Services.AddScoped<IVisitsService, VisitsService>();
         }
 
         public static void AddValidators(this WebApplicationBuilder builder)

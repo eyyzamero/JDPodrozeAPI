@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using JDPodrozeAPI.Controllers.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.DTOs;
@@ -19,13 +18,15 @@ namespace JDPodrozeAPI.Services.Excursions
         private readonly ExcursionsDbContext _excursionsDbContext;
         private readonly IEmailsService _emailsService;
         private readonly IImagesService _imagesService;
+        private readonly IVisitsService _visitsService;
 
-        public ExcursionsService(IMapper mapper, ExcursionsDbContext excursionsDbContext, IEmailsService emailsService, IImagesService imagesService)
+        public ExcursionsService(IMapper mapper, ExcursionsDbContext excursionsDbContext, IEmailsService emailsService, IImagesService imagesService, IVisitsService visitsService)
         {
             _mapper = mapper;
             _excursionsDbContext = excursionsDbContext;
             _emailsService = emailsService;
             _imagesService = imagesService;
+            _visitsService = visitsService;
         }
 
         public async Task<byte[]> GetImageNew(int fileId, string resolution, string extension)
@@ -79,6 +80,7 @@ namespace JDPodrozeAPI.Services.Excursions
             foreach (var excursion in response.Items)
                 excursion.ImageId = _excursionsDbContext.ExcursionsImages.Where(i => i.ExcursionId == excursion.Id).OrderBy(x => x.Order).Select(i => i.Id).FirstOrDefault();
 
+            _visitsService.Register(VisitType.HOME_PAGE, "Odwiedzono stronę główną");
             return response;
         }
 
@@ -100,6 +102,7 @@ namespace JDPodrozeAPI.Services.Excursions
                         image.Base64 = Convert.ToBase64String(imageBytes);
                     }
                 }
+                await _visitsService.Register(VisitType.EXCURSION_GET, $"Pobrano dane wycieczki (Id wycieczki: {response.Id})");
             }
             return response;
         }
@@ -215,6 +218,7 @@ namespace JDPodrozeAPI.Services.Excursions
                     body: OrdersEmailsTemplates.GetOrderConfirmationOfBookingSubmissionTraditionalTransfer(excursion.Title, booker.Surname, order.Price),
                     includeLogo: true
                 );
+                _visitsService.Register(VisitType.EXCURSION_ENROLL, $"Zapisano na wycieczkę (Id wycieczki: {order.ExcursionId}, Id zamówienia: {order.OrderId})");
                 return null;
             }
             return order.OrderId;
