@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Core.DTOs;
+using JDPodrozeAPI.Core.DTOs.Excursions;
+using JDPodrozeAPI.Core.DTOs.Users;
 using JDPodrozeAPI.Services.Orders.Contracts.Responses;
 
 namespace JDPodrozeAPI.Services.Orders.Profiles
@@ -10,12 +11,24 @@ namespace JDPodrozeAPI.Services.Orders.Profiles
         public OrdersServiceResponsesProfile()
         {
             CreateMap<ExcursionDTO, OrdersServiceGetListItemRes>()
-                .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders));
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.Active))
+                .AfterMap((src, dest) => dest.AvailableSeats = src.Seats - src.Orders.Sum(order => order.Participants.Count));
 
-            CreateMap<ExcursionOrderDTO, OrdersServiceGetListOrderRes>()
-                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants));
+            CreateMap<List<ExcursionDTO>, OrdersServiceGetListRes>()
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
 
-            CreateMap<ExcursionParticipantDTO, OrdersServiceGetListOrderParticipantRes>();
+            CreateMap<ExcursionDTO, OrdersGetExcursionOrderWithDetailsExcursionRes>()
+                .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.Seats - src.Orders.Sum(order => order.Participants.Count)));
+
+            CreateMap<ExcursionOrderDTO, OrdersGetExcursionOrdersWithDetailsOrderRes>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrderId));
+
+            CreateMap<UserDTO, OrdersGetExcursionOrdersWithDetailsParticipantUserRes>();
+
+            CreateMap<ExcursionParticipantDTO, OrdersGetExcursionOrdersWithDetailsParticipantRes>();
+
+            CreateMap<ExcursionDTO, OrdersGetExcursionOrdersWithDetailsRes>()
+                .ForMember(dest => dest.Excursion, opt => opt.MapFrom(src => src));
         }
     }
 }

@@ -24,12 +24,19 @@ namespace JDPodrozeAPI.Controllers.Orders
             _ordersService = ordersService;
         }
 
-        [HttpGet("GetList")]
-        [ProducesResponseType(typeof(List<OrdersServiceGetListItemRes>), (int) HttpStatusCode.OK)]
-        public IActionResult GetList()
+        [HttpPost]
+        [ProducesResponseType(typeof(IOrdersServiceGetListRes), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetList([FromBody] OrdersGetListReq request)
         {
-            List<OrdersServiceGetListItemRes> res = _ordersService.GetList();
-            return Ok(res);
+            IOrdersServiceGetListRes response = await _ordersService.GetList(request);
+            return Ok(response);
+        }
+
+        [HttpGet("GetExcursionOrdersWithDetails/{excursionId}")]
+        public async Task<IActionResult> GetExcursionOrdersWithDetails(int excursionId)
+        {
+            IOrdersGetExcursionOrdersWithDetailsRes response = await _ordersService.GetExcursionOrdersWithDetails(excursionId);
+            return Ok(response);
         }
 
         [HttpPost("ChangePaymentStatus/{OrderId}")]

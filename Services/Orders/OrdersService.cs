@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Orders.Contracts;
 using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Core.Enums;
 using JDPodrozeAPI.Services.Orders;
 using JDPodrozeAPI.Services.Orders.Contracts.Responses;
+using JDPodrozeAPI.Services.Orders.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace JDPodrozeAPI.Services
@@ -22,16 +24,53 @@ namespace JDPodrozeAPI.Services
             _emailsService = emailsService;
         }
 
-        public List<OrdersServiceGetListItemRes> GetList()
+        public async Task<IOrdersServiceGetListRes> GetList(IOrdersGetListReq request)
         {
-            List<ExcursionDTO> list = _excursionsDbContext.Excursions
+            IQueryable<ExcursionDTO> listQuery = _excursionsDbContext.Excursions
                 .Include(x => x.Orders)
                 .ThenInclude(x => x.Participants)
+                .Where(x => x.Orders.Any());
+
+            switch(request.Active)
+            {
+                case OrdersListFilterActiveType.ACTIVE:
+                    listQuery = listQuery.Where(x => x.Active);
+                    break;
+                case OrdersListFilterActiveType.INACTIVE:
+                    listQuery = listQuery.Where(x => !x.Active);
+                    break;
+                case OrdersListFilterActiveType.ARCHIVED:
+                    listQuery = listQuery.Where(x => !x.Active || (x.DateFrom == null || x.DateFrom < DateTime.Now));
+                    break;
+            }
+
+            List<ExcursionDTO> list = await listQuery
                 .OrderBy(x => x.DateFrom)
-                .Where(x => x.Orders.Any())
-                .ToList();
-            List<OrdersServiceGetListItemRes> serviceRes = _mapper.Map<List<OrdersServiceGetListItemRes>>(list);
+                .ToListAsync();
+
+            IOrdersServiceGetListRes serviceRes = _mapper.Map<OrdersServiceGetListRes>(list);
             return serviceRes;
+        }
+
+        public async Task<IOrdersGetExcursionOrdersWithDetailsRes> GetExcursionOrdersWithDetails(int excursionId)
+        {
+            ExcursionDTO excursion = _excursionsDbContext.Excursions
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.Participants)
+                .Single(x => x.Id == excursionId);
+
+            excursion.Orders = excursion.Orders
+                .OrderByDescending(x => x.BookerId)
+                .ToList();
+
+            excursion.Orders.ForEach(order => 
+                order.Participants = order.Participants
+                    .OrderBy(x => x.BookerId != null)
+                    .ThenBy(x => $"{x.Name} {x.Surname}")
+                    .ToList());
+
+            IOrdersGetExcursionOrdersWithDetailsRes response = _mapper.Map<OrdersGetExcursionOrdersWithDetailsRes>(excursion);
+            return response;
         }
 
         public void ChangePaymentStatus(Guid orderId, PaymentStatus paymentStatus)

@@ -7,6 +7,8 @@
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
         public decimal PriceGross { get; set; }
-        public List<OrdersServiceGetListOrderRes> Orders { get; set; }
+        public bool IsActive { get; set; }
+        public int Seats { get; set; }
+        public int AvailableSeats { get; set; }
     }
 }

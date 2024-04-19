@@ -18,7 +18,8 @@
   
                               .email-container img {{
                                 display: block;
-                                width: 300px;
+                                width: 200px;
+                                height: 50px;
                                 margin: 0 auto;
                               }}
   
@@ -74,7 +75,8 @@
   
                               .email-container img {{
                                 display: block;
-                                width: 300px;
+                                width: 200px;
+                                height: 50px;
                                 margin: 0 auto;
                               }}
   

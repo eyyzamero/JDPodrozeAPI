@@ -36,7 +36,7 @@ namespace JDPodrozeAPI.Services
                 {
                     if (includeLogo)
                     {
-                        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "logo.jpg");
+                        string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "logo.png");
                         Attachment attachment = new Attachment(filePath);
                         attachment.ContentId = "logo";
                         attachment.ContentDisposition.Inline = true;
