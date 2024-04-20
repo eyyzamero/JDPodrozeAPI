@@ -41,9 +41,17 @@ namespace JDPodrozeAPI.Controllers.Orders
 
         [HttpPost("ChangePaymentStatus/{OrderId}")]
         [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
-        public IActionResult ChangePaymentStatus(Guid OrderId, [FromBody] OrdersChangePaymentStatusReq request)
+        public async Task<IActionResult> ChangePaymentStatus(Guid OrderId, [FromBody] OrdersChangePaymentStatusReq request)
         {
-            _ordersService.ChangePaymentStatus(OrderId, (PaymentStatus) request.Status);
+            await _ordersService.ChangePaymentStatus(OrderId, (PaymentStatus) request.Status);
+            return Ok();
+        }
+
+        [HttpDelete("DeleteParticipant/{participantId}")]
+        [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> DeleteParticipant(int participantId)
+        {
+            await _ordersService.DeleteParticipant(participantId);
             return Ok();
         }
     }

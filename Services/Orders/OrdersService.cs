@@ -73,12 +73,16 @@ namespace JDPodrozeAPI.Services
             return response;
         }
 
-        public void ChangePaymentStatus(Guid orderId, PaymentStatus paymentStatus)
+        public async Task ChangePaymentStatus(Guid orderId, PaymentStatus paymentStatus)
         {
-            ExcursionOrderDTO order = _excursionsDbContext.ExcursionsOrders.Include(x => x.Participants).Include(x => x.Excursion).Single(x => x.OrderId == orderId);
+            ExcursionOrderDTO order = await _excursionsDbContext.ExcursionsOrders
+                .Include(x => x.Participants)
+                .Include(x => x.Excursion)
+                .SingleAsync(x => x.OrderId == orderId);
+
             order.PaymentStatus = (char) paymentStatus;
             _excursionsDbContext.ExcursionsOrders.Update(order);
-            _excursionsDbContext.SaveChanges();
+            await _excursionsDbContext.SaveChangesAsync();
 
             if ((PaymentStatus) order.PaymentStatus == PaymentStatus.PAID)
             {
@@ -91,6 +95,27 @@ namespace JDPodrozeAPI.Services
                     includeLogo: true
                 );
             }
+        }
+
+        public async Task DeleteParticipant(int participantId)
+        {
+            ExcursionParticipantDTO excursionParticipant = await _excursionsDbContext.ExcursionsParticipants
+                .Include(x => x.Order)
+                .SingleAsync(x => x.Id == participantId);
+
+            if (excursionParticipant.BookerId == null)
+            {
+                List<ExcursionParticipantDTO> excursionParticipants = await _excursionsDbContext.ExcursionsParticipants
+                    .Where(x => x.OrderId == excursionParticipant.Order.OrderId)
+                    .ToListAsync();
+
+                _excursionsDbContext.ExcursionsOrders.Remove(excursionParticipant.Order);
+                _excursionsDbContext.ExcursionsParticipants.RemoveRange(excursionParticipants);
+            } else
+            {
+                _excursionsDbContext.ExcursionsParticipants.Remove(excursionParticipant);
+            }
+            await _excursionsDbContext.SaveChangesAsync();
         }
     }
 }
