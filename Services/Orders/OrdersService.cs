@@ -101,18 +101,21 @@ namespace JDPodrozeAPI.Services
         {
             ExcursionParticipantDTO excursionParticipant = await _excursionsDbContext.ExcursionsParticipants
                 .Include(x => x.Order)
+                .Include(x => x.Order.Excursion)
+                .Include(x => x.Order.Participants)
                 .SingleAsync(x => x.Id == participantId);
 
             if (excursionParticipant.BookerId == null)
             {
-                List<ExcursionParticipantDTO> excursionParticipants = await _excursionsDbContext.ExcursionsParticipants
-                    .Where(x => x.OrderId == excursionParticipant.Order.OrderId)
-                    .ToListAsync();
-
+                _excursionsDbContext.ExcursionsParticipants.RemoveRange(excursionParticipant.Order.Participants);
                 _excursionsDbContext.ExcursionsOrders.Remove(excursionParticipant.Order);
-                _excursionsDbContext.ExcursionsParticipants.RemoveRange(excursionParticipants);
             } else
             {
+                excursionParticipant.Order.Price = excursionParticipant.Order.Participants
+                    .Where(x => x.Id != excursionParticipant.Id)
+                    .Sum(x => x.Discount ? excursionParticipant.Order.Excursion.DiscountPriceGross : excursionParticipant.Order.Excursion.PriceGross);
+
+                _excursionsDbContext.ExcursionsOrders.Update(excursionParticipant.Order);
                 _excursionsDbContext.ExcursionsParticipants.Remove(excursionParticipant);
             }
             await _excursionsDbContext.SaveChangesAsync();
