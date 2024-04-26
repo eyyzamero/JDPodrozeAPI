@@ -47,6 +47,14 @@ namespace JDPodrozeAPI.Controllers.Orders
             return Ok();
         }
 
+        [HttpPost("Participant/AddOrEdit")]
+        [ProducesResponseType(typeof(int?), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> AddOrEditParticipant([FromBody] OrdersAddOrEditParticipantReq request)
+        {
+            int? response = await _ordersService.AddOrEditParticipant(request);
+            return Ok(response);
+        }
+
         [HttpDelete("DeleteParticipant/{participantId}")]
         [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteParticipant(int participantId)

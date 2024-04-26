@@ -13,7 +13,8 @@ namespace JDPodrozeAPI.Core.Extensions
                 if (configuration == null)
                     throw new ArgumentNullException(nameof(configuration));
 
-                DbContextOptionsBuilder<T> optionsBuilder = new DbContextOptionsBuilder<T>().UseSqlServer(configuration["Database:ConnectionString"]);
+                DbContextOptionsBuilder<T> optionsBuilder = new DbContextOptionsBuilder<T>()
+                    .UseSqlServer(configuration["Database:ConnectionString"]);
 
                 T dbContext = (T) Activator.CreateInstance(typeof(T), optionsBuilder.Options)!;
                 return dbContext;

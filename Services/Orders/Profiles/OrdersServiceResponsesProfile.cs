@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Orders.Contracts;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Core.DTOs.Users;
@@ -29,6 +30,10 @@ namespace JDPodrozeAPI.Services.Orders.Profiles
 
             CreateMap<ExcursionDTO, OrdersGetExcursionOrdersWithDetailsRes>()
                 .ForMember(dest => dest.Excursion, opt => opt.MapFrom(src => src));
+
+            CreateMap<OrdersAddOrEditParticipantReq, ExcursionParticipantDTO>()
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.BookerId == null ? src.Email : null))
+                .ForMember(dest => dest.TelephoneNumber, opt => opt.MapFrom(src => src.BookerId == null ? src.TelephoneNumber : null));
         }
     }
 }

@@ -97,6 +97,26 @@ namespace JDPodrozeAPI.Services
             }
         }
 
+        public async Task<int?> AddOrEditParticipant(IOrdersAddOrEditParticipantReq request)
+        {
+            ExcursionOrderDTO excursionOrder = await _excursionsDbContext.ExcursionsOrders
+                .Include(x => x.Excursion)
+                .Include(x => x.Participants)
+                .AsNoTracking()
+                .SingleAsync(x => x.OrderId == request.OrderId);
+
+            ExcursionParticipantDTO participant = _mapper.Map<ExcursionParticipantDTO>(request);
+
+            if (request.Id == null)
+                _excursionsDbContext.ExcursionsParticipants.Add(participant);
+            else
+                _excursionsDbContext.ExcursionsParticipants.Update(participant);
+
+            _SumOrderPrice(excursionOrder, excursionOrder.Participants);
+            await _excursionsDbContext.SaveChangesAsync();
+            return request.Id == null ? participant.Id : null;
+        }
+
         public async Task DeleteParticipant(int participantId)
         {
             ExcursionParticipantDTO excursionParticipant = await _excursionsDbContext.ExcursionsParticipants
@@ -111,14 +131,22 @@ namespace JDPodrozeAPI.Services
                 _excursionsDbContext.ExcursionsOrders.Remove(excursionParticipant.Order);
             } else
             {
-                excursionParticipant.Order.Price = excursionParticipant.Order.Participants
+                List<ExcursionParticipantDTO> participantsExceptCurrent = excursionParticipant.Order.Participants
                     .Where(x => x.Id != excursionParticipant.Id)
-                    .Sum(x => x.Discount ? excursionParticipant.Order.Excursion.DiscountPriceGross : excursionParticipant.Order.Excursion.PriceGross);
+                    .ToList();
+
+                _SumOrderPrice(excursionParticipant.Order, participantsExceptCurrent);
 
                 _excursionsDbContext.ExcursionsOrders.Update(excursionParticipant.Order);
                 _excursionsDbContext.ExcursionsParticipants.Remove(excursionParticipant);
             }
             await _excursionsDbContext.SaveChangesAsync();
+        }
+
+        private void _SumOrderPrice(ExcursionOrderDTO order, List<ExcursionParticipantDTO> participants)
+        {
+            order.Price = participants
+                .Sum(x => x.Discount ? order.Excursion.DiscountPriceGross : order.Excursion.PriceGross);
         }
     }
 }
