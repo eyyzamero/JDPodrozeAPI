@@ -196,7 +196,7 @@ namespace JDPodrozeAPI.Services.Excursions
             _excursionsDbContext.SaveChanges();
 
             // Adding participants
-            if (request.Participants.Count() > 0)
+            if (request.Participants.Count > 0)
             {
                 List<ExcursionParticipantDTO> participants = _mapper.Map<List<ExcursionsServiceEnrollPersonReq>, List<ExcursionParticipantDTO>>(request.Participants);
                 participants.ForEach(participant =>
@@ -211,14 +211,17 @@ namespace JDPodrozeAPI.Services.Excursions
             // Send email with confirmation of booking submission with payment details
             if (request.PaymentMethod == PaymentMethod.TRADITIONAL_TRANSFER)
             {
-                _emailsService.SendEmail(
-                    email: booker.Email!,
-                    senderDetails: $"{booker.Name} {booker.Surname}",
-                    subject: "Potwierdzenie złożenia rezerwacji",
-                    body: OrdersEmailsTemplates.GetOrderConfirmationOfBookingSubmissionTraditionalTransfer(excursion.Title, booker.Surname, order.Price),
-                    includeLogo: true
-                );
-                _visitsService.Register(VisitType.EXCURSION_ENROLL, $"Zapisano na wycieczkę (Id wycieczki: {order.ExcursionId}, Id zamówienia: {order.OrderId})");
+                if (excursion.Active)
+                {
+                    _emailsService.SendEmail(
+                       email: booker.Email!,
+                       senderDetails: $"{booker.Name} {booker.Surname}",
+                       subject: "Potwierdzenie złożenia rezerwacji",
+                       body: OrdersEmailsTemplates.GetOrderConfirmationOfBookingSubmissionTraditionalTransfer(excursion.Title, booker.Surname, order.Price),
+                       includeLogo: true
+                    );
+                    _visitsService.Register(VisitType.EXCURSION_ENROLL, $"Zapisano na wycieczkę (Id wycieczki: {order.ExcursionId}, Id zamówienia: {order.OrderId})");
+                }
                 return null;
             }
             return order.OrderId;
