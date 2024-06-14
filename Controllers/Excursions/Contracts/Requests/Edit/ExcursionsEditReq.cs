@@ -16,5 +16,6 @@
         public string? DateTo { get; set; }
         public bool IsTemplate { get; set; }
         public List<ExcursionsEditImageReq> Images { get; set; }
-    }
+				public List<ExcursionsEditPickupPointReq> PickupPoints { get; set; }
+		}
 }

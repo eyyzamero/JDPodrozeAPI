@@ -36,7 +36,7 @@ namespace JDPodrozeAPI.Controllers.Excursions
         [ProducesResponseType(typeof(IExcursionsGetItemRes), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> GetItem(int id)
         {
-            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id, false);
+            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id);
             IExcursionsGetItemRes response = _mapper.Map<ExcursionsGetItemRes>(serviceResponse);
             return Ok(response);
         }
@@ -46,7 +46,7 @@ namespace JDPodrozeAPI.Controllers.Excursions
         [ProducesResponseType(typeof(IExcursionsGetItemRes), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetItemWithImages(int id)
         {
-            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id, true);
+            IExcursionsServiceGetItemRes? serviceResponse = await _excursionsService.GetItem(id, true, true);
             IExcursionsGetItemRes response = _mapper.Map<ExcursionsGetItemRes>(serviceResponse);
             return Ok(response);
         }

@@ -84,11 +84,16 @@ namespace JDPodrozeAPI.Services.Excursions
             return response;
         }
 
-        public async Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images)
+        public async Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images = false, bool pickupPoints = false)
         {
             IExcursionsServiceGetItemRes? response = null;
-            ExcursionDTO? excursion = _excursionsDbContext.Excursions.Include(x => x.Images).SingleOrDefault(x => x.Id == id);
+            IQueryable<ExcursionDTO> excursions = _excursionsDbContext.Excursions.Include(x => x.Images);
 
+            if (pickupPoints)
+                excursions = excursions.Include(x => x.PickupPoints);
+
+            ExcursionDTO? excursion = await excursions.SingleOrDefaultAsync(x => x.Id == id);
+                
             if (excursion != null)
             {
                 excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
@@ -150,6 +155,13 @@ namespace JDPodrozeAPI.Services.Excursions
             await _AddNewImages(request, excursion.Id);
 
             _UpdateImagesOrder(request);
+            await _excursionsDbContext.SaveChangesAsync();
+
+            excursion = _excursionsDbContext.Excursions
+                .Include(x => x.PickupPoints)
+                .Single(x => x.Id == excursion.Id);
+
+            excursion.PickupPoints.RemoveAll(p => !request.PickupPoints.Any(pp => p.Name == pp.Name));
             await _excursionsDbContext.SaveChangesAsync();
         }
 

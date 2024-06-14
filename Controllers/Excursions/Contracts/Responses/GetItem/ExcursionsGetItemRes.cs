@@ -15,5 +15,6 @@
         public decimal DiscountPrice { get; set; }
         public int Seats { get; set; }
         public List<ExcursionsGetItemImageRes> Images { get; set; }
+        public List<ExcursionsGetItemPickupPointRes> PickupPoints { get; set; }
     }
 }

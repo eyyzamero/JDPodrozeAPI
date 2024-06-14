@@ -7,7 +7,7 @@ namespace JDPodrozeAPI.Services.Excursions
     public interface IExcursionsService
     {
         public Task<byte[]> GetImageNew(int fileId, string resolution, string extension);
-        public Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images);
+        public Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images = false, bool pickupPoints = false);
         public IExcursionsServiceGetListRes GetList(IExcursionsGetListReq request);
         public IExcursionsServiceGetListShortRes GetListShort();
         public Task Add(ExcursionsServiceAddReq request);

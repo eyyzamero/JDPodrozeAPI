@@ -10,5 +10,6 @@ namespace JDPodrozeAPI.Core.Contexts.Excursions
         public DbSet<ExcursionImageDTO> ExcursionsImages { get; set; }
         public DbSet<ExcursionOrderDTO> ExcursionsOrders { get; set; }
         public DbSet<ExcursionParticipantDTO> ExcursionsParticipants { get; set; }
+        public DbSet<ExcursionPickupPointDTO> ExcursionsPickupPoints { get; set; }
     }
 }

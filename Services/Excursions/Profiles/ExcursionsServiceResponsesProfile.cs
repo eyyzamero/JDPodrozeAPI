@@ -29,6 +29,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
 
             CreateMap<ExcursionImageDTO, ExcursionsServiceGetItemImageRes>();
+            CreateMap<ExcursionPickupPointDTO, ExcursionsServiceGetItemPickupPointRes>();
 
             CreateMap<ExcursionDTO, ExcursionsServiceGetItemRes>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.PriceGross))

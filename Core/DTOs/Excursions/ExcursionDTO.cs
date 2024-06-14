@@ -30,7 +30,8 @@ namespace JDPodrozeAPI.Core.DTOs
         public bool Discount { get; set; }
         public decimal DiscountPriceGross { get; set; }
         public int Seats { get; set; }
-        public List<ExcursionImageDTO> Images { get; set; }
+        public virtual List<ExcursionImageDTO> Images { get; set; }
+        public virtual List<ExcursionPickupPointDTO> PickupPoints { get; set; }
         public virtual List<ExcursionOrderDTO> Orders { get; set; }
     }
 }

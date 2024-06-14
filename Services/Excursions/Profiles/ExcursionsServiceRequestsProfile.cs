@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Excursions.Contracts.Requests;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Core.Enums;
@@ -11,6 +12,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
         public ExcursionsServiceRequestsProfile()
         {
             CreateMap<ExcursionsServiceAddImageReq, ExcursionImageDTO>();
+            CreateMap<ExcursionsServiceAddPickupPointReq, ExcursionPickupPointDTO>();
 
             CreateMap<ExcursionsServiceAddReq, ExcursionDTO>()
                 .ForMember(dest => dest.PriceGross, opt => opt.MapFrom(src => src.Price))
@@ -19,6 +21,7 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
 
             CreateMap<ExcursionsServiceEditImageReq, ExcursionImageDTO>();
+            CreateMap<ExcursionsServiceEditPickupPointReq, ExcursionPickupPointDTO>();
 
             CreateMap<ExcursionsServiceEditReq, ExcursionDTO>()
                 .ForMember(dest => dest.PriceGross, opt => opt.MapFrom(src => src.Price))
