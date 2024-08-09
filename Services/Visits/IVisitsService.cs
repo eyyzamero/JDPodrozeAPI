@@ -4,6 +4,6 @@ namespace JDPodrozeAPI.Services
 {
     public interface IVisitsService
     {
-        public Task Register(VisitType type, string description);
+        public Task RegisterAsync(VisitType type, string description);
     }
 }

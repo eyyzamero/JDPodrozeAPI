@@ -1,9 +1,9 @@
-﻿using JDPodrozeAPI.Core.DTOs.Users;
+﻿using JDPodrozeAPI.Core.DTOs;
 
 namespace JDPodrozeAPI.Core.Services.JWT
 {
     public interface IJWTService
     {
-        string CreateToken(UserDTO user);
+        Task<string> CreateToken(UserDTO user);
     }
 }

@@ -4,6 +4,6 @@ namespace JDPodrozeAPI.Services
 {
     public interface INewsletterService
     {
-        void Enroll(INewsletterServiceEnrollReq request);
+        Task EnrollAsync(INewsletterServiceEnrollReq request);
     }
 }

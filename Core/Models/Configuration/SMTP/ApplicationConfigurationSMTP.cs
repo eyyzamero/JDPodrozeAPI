@@ -1,6 +1,6 @@
 ﻿namespace JDPodrozeAPI.Core.Models.Configuration.SMTP
 {
-    public class ApplicationConfigurationSMTP
+    public record ApplicationConfigurationSMTP
     {
         public string Email { get; init; }
 

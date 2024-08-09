@@ -1,7 +1,7 @@
 ﻿namespace JDPodrozeAPI.Services.Excursions.Contracts.Responses
 {
-    public class ExcursionsServiceGetListShortRes : IExcursionsServiceGetListShortRes
+    public record ExcursionsServiceGetListShortRes : IExcursionsServiceGetListShortRes
     {
-        public List<ExcursionsServiceGetListShortItemRes> Items { get; set; }
+        public List<ExcursionsServiceGetListShortItemRes> Items { get; init; }
     }
 }

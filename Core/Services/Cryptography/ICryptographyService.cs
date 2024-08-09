@@ -2,7 +2,7 @@
 {
     public interface ICryptographyService
     {
-        string Encrypt(string value);
-        bool Verify(string value, string hash);
+        Task<string> EncryptAsync(string value);
+        Task<bool> VerifyAsync(string value, string hash);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests
 {
-    public class AccountIsLoginAvailableReq : IAccountIsLoginAvailableReq
+    public record AccountIsLoginAvailableReq : IAccountIsLoginAvailableReq
     {
         [Required]
         public string Login { get; set; }

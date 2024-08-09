@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using JDPodrozeAPI.Core.Contexts;
 using JDPodrozeAPI.Core.DTOs.Newsletter;
+using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Services.Newsletter.Contracts.Requests;
 
 namespace JDPodrozeAPI.Services
@@ -8,19 +8,18 @@ namespace JDPodrozeAPI.Services
     public class NewsletterService : INewsletterService
     {
         private readonly IMapper _mapper;
-        private readonly NewsletterDbContext _newsletterDbContext;
+        private readonly INewsletterRepository _newsletterRepository;
 
-        public NewsletterService(IMapper mapper, NewsletterDbContext newsletterDbContext)
+        public NewsletterService(IMapper mapper, INewsletterRepository newsletterRepository)
         {
             _mapper = mapper;
-            _newsletterDbContext = newsletterDbContext;
+            _newsletterRepository = newsletterRepository;
         }
 
-        public void Enroll(INewsletterServiceEnrollReq request)
+        public async Task EnrollAsync(INewsletterServiceEnrollReq request)
         {
             NewsletterDTO newsletter = _mapper.Map<NewsletterDTO>(request);
-            _newsletterDbContext.Newsletters.Add(newsletter);
-            _newsletterDbContext.SaveChanges();
+            await _newsletterRepository.AddNewsletterAsync(newsletter);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace JDPodrozeAPI.Services.Newsletter.Profiles
     {
         public NewsletterServiceRequestsProfile()
         {
-            CreateMap<NewsletterServiceEnrollReq, NewsletterDTO>();
+            CreateMap<INewsletterServiceEnrollReq, NewsletterDTO>();
         }
     }
 }

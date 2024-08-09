@@ -1,25 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests
+﻿namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests
 {
-    public class AccountRegisterReq : IAccountRegisterReq
+    public record AccountRegisterReq : IAccountRegisterReq
     {
-        [Required]
-        public string Login { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
-        
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        public bool GetToken { get; set; }
+        public string Login { get; init; }
+        public string Password { get; init; }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
+        public string Email { get; init; }
+        public bool GetToken { get; init; }
     }
 }

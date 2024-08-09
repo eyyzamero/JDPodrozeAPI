@@ -2,12 +2,12 @@
 
 namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests
 {
-    public class AccountLoginReq
+    public record AccountLoginReq : IAccountLoginReq
     {
         [Required]
-        public string Login { get; set; }
+        public string Login { get; init; }
 
         [Required]
-        public string Password { get; set; }
+        public string Password { get; init; }
     }
 }

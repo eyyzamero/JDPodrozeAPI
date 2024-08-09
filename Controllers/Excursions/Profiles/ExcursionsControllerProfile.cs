@@ -12,8 +12,13 @@ namespace JDPodrozeAPI.Controllers.Excursions.Profiles
     {
         public ExcursionsControllerProfile()
         {
-            CreateMap<ExcursionsServiceGetListShortItemRes, ExcursionsGetListShortItemRes>();
-            CreateMap<ExcursionsServiceGetListShortRes, ExcursionsGetListShortRes>();
+            CreateMap<IExcursionsServiceGetListShortItemRes, ExcursionsGetListShortItemRes>();
+            CreateMap<IExcursionsServiceGetListShortItemRes, IExcursionsGetListShortItemRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ExcursionsGetListShortItemRes>(src));
+
+            CreateMap<IExcursionsServiceGetListShortRes, ExcursionsGetListShortRes>();
+            CreateMap<IExcursionsServiceGetListShortRes, IExcursionsGetListShortRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ExcursionsGetListShortRes>(src));
 
             CreateMap<ExcursionsAddImageReq, ExcursionsServiceAddImageReq>();
             CreateMap<ExcursionsAddPickupPointReq, ExcursionsServiceAddPickupPointReq>();

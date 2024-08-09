@@ -16,6 +16,7 @@ using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.Contexts.Users;
 using JDPodrozeAPI.Core.Models.Configuration;
 using JDPodrozeAPI.Core.Models.Configuration.ParameterStore.Credentials;
+using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Core.Services.Cryptography;
 using JDPodrozeAPI.Core.Services.JWT;
 using JDPodrozeAPI.Core.Validation.Extensions;
@@ -25,6 +26,7 @@ using JDPodrozeAPI.Services.Excursions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SixLabors.ImageSharp;
 using System.Text;
 
 namespace JDPodrozeAPI.Core.Extensions
@@ -39,24 +41,8 @@ namespace JDPodrozeAPI.Core.Extensions
                 .AddCommandLine(args)
                 .Build();
 
-            ApplicationConfigurationParameterStoreCredentials credentials = new ApplicationConfigurationParameterStoreCredentials();
-            configuration.GetSection("ParameterStore:Credentials").Bind(credentials);
-
-            if (credentials.AccessKey != null && credentials.SecretKey != null)
-            {
-                string environment = builder.Environment.EnvironmentName.ToLower();
-                BasicAWSCredentials credentialsAWS = new BasicAWSCredentials(credentials.AccessKey, credentials.SecretKey);
-
-                builder.Configuration.AddSystemsManager($"/JDPodrozeAPI/{environment}",
-                    new AWSOptions
-                    {
-                        Region = RegionEndpoint.EUCentral1,
-                        Credentials = credentialsAWS
-                    },
-                    false,
-                    TimeSpan.FromMinutes(1)
-                );
-            }
+            if (!bool.TryParse(configuration.GetSection("ParameterStore:Enabled").Value, out bool obtainConfigurationFromParameterStore) || obtainConfigurationFromParameterStore == true)
+                _InitParameterStoreConfiguration(builder, configuration);
         }
 
         public static void ValidateConfiguration(this WebApplicationBuilder builder)
@@ -151,6 +137,8 @@ namespace JDPodrozeAPI.Core.Extensions
         {
             builder.Services.AddSingleton<IJWTService, JWTService>();
             builder.Services.AddSingleton<ICryptographyService, CryptographyService>();
+            builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+            builder.Services.AddScoped<INewsletterRepository, NewsletterRepository>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IExcursionsService, ExcursionsService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();
@@ -169,6 +157,28 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddTransient<IValidator<NewsletterEnrollReq>, NewsletterEnrollReqValidator>();
             builder.Services.AddTransient<IValidator<ContactReq>, ContactReqValidator>();
             builder.Services.AddTransient<IValidator<ExcursionsGetListReq>, ExcursionsGetListReqValidator>();
+        }
+
+        private static void _InitParameterStoreConfiguration(WebApplicationBuilder builder, IConfigurationRoot configuration)
+        {
+            ApplicationConfigurationParameterStoreCredentials credentials = new();
+            configuration.GetSection("ParameterStore:Credentials").Bind(credentials);
+
+            if (credentials.AccessKey != null && credentials.SecretKey != null)
+            {
+                string environment = builder.Environment.EnvironmentName.ToLower();
+                BasicAWSCredentials credentialsAWS = new BasicAWSCredentials(credentials.AccessKey, credentials.SecretKey);
+
+                builder.Configuration.AddSystemsManager($"/JDPodrozeAPI/{environment}",
+                    new AWSOptions
+                    {
+                        Region = RegionEndpoint.EUCentral1,
+                        Credentials = credentialsAWS
+                    },
+                    false,
+                    TimeSpan.FromMinutes(1)
+                );
+            }
         }
     }
 }

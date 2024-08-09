@@ -1,4 +1,4 @@
-﻿using JDPodrozeAPI.Core.DTOs.Users;
+﻿using JDPodrozeAPI.Core.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace JDPodrozeAPI.Core.Contexts.Users

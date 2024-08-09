@@ -11,15 +11,15 @@ namespace JDPodrozeAPI.Core.Services.Cryptography
             _configuration = configuration;
         }
 
-        public string Encrypt(string value)
+        public async Task<string> EncryptAsync(string value)
         {
-            string result = BC.HashPassword(value, _configuration["Cryptography:Salt"], true, HashType.SHA512);
+            string result = await Task.Run(() => BC.HashPassword(value, _configuration["Cryptography:Salt"], true, HashType.SHA512));
             return result;
         }
 
-        public bool Verify(string value, string hash)
+        public async Task<bool> VerifyAsync(string value, string hash)
         {
-            bool result = BC.Verify(value, hash, true, HashType.SHA512);
+            bool result = await Task.Run(() => BC.Verify(value, hash, true, HashType.SHA512));
             return result;
         }
     }

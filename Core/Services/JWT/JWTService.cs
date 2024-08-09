@@ -1,4 +1,4 @@
-﻿using JDPodrozeAPI.Core.DTOs.Users;
+﻿using JDPodrozeAPI.Core.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -17,11 +17,11 @@ namespace JDPodrozeAPI.Core.Services.JWT
             _configuration = configuration;
         }
 
-        public string CreateToken(UserDTO user)
+        public async Task<string> CreateToken(UserDTO user)
         {
             byte[] key = Encoding.UTF8.GetBytes(_configuration["Authentication:SigningKey"]!);
 
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            SecurityTokenDescriptor tokenDescriptor = new()
             {
                 Expires = DateTime.UtcNow.Add(TokenLifeTime),
                 Issuer = _configuration["Authentication:Issuer"],
@@ -30,18 +30,18 @@ namespace JDPodrozeAPI.Core.Services.JWT
                 Subject = new ClaimsIdentity(
                     new Claim[]
                     {
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("Login", user.Login),
-                        new Claim("Email", user.Email),
-                        new Claim(ClaimTypes.Role, user.IsAdmin ? "ADMINISTRATOR" : "USER")
+                        new("Id", user.Id.ToString()),
+                        new("Login", user.Login),
+                        new("Email", user.Email),
+                        new(ClaimTypes.Role, user.IsAdmin ? "ADMINISTRATOR" : "USER")
                     }
                 )
             };
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
-            string jsonWebToken = tokenHandler.WriteToken(token);
+            string jsonWebToken = await Task.Run(() => tokenHandler.WriteToken(token));
             return jsonWebToken;
         }
     }

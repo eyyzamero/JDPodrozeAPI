@@ -1,8 +1,8 @@
 ﻿namespace JDPodrozeAPI.Services.Account.Contracts.Requests
 {
-    public class AccountServiceLoginReq : IAccountServiceLoginReq
+    public record AccountServiceLoginReq : IAccountServiceLoginReq
     {
-        public string Login { get; set; }
-        public string Password { get; set; }
+        public string Login { get; init; }
+        public string Password { get; init; }
     }
 }

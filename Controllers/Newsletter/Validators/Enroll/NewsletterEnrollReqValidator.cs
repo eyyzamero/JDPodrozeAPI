@@ -7,8 +7,8 @@ namespace JDPodrozeAPI.Controllers.Newsletter.Validators
     {
         public NewsletterEnrollReqValidator()
         {
-            RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress();
-            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.Email).NotNull().NotEmpty().EmailAddress().MaximumLength(150);
+            RuleFor(x => x.Name).NotNull().NotEmpty().MaximumLength(50);
         }
     }
 }

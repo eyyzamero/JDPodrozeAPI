@@ -2,7 +2,7 @@
 
 namespace JDPodrozeAPI.Core.Models.Configuration.ParameterStore
 {
-    public class ApplicationConfigurationParameterStore
+    public record ApplicationConfigurationParameterStore
     {
         public ApplicationConfigurationParameterStoreCredentials Credentials { get; init; }
     }

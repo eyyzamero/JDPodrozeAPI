@@ -1,8 +1,8 @@
 ﻿namespace JDPodrozeAPI.Services.Newsletter.Contracts.Requests
 {
-    public class NewsletterServiceEnrollReq : INewsletterServiceEnrollReq
+    public record NewsletterServiceEnrollReq : INewsletterServiceEnrollReq
     {
-        public string Email { get; set; }
-        public string Name { get; set; }
+        public string Email { get; init; }
+        public string Name { get; init; }
     }
 }

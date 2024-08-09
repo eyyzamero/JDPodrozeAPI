@@ -2,6 +2,6 @@
 {
     public interface IExcursionsServiceGetListShortRes
     {
-        public List<ExcursionsServiceGetListShortItemRes> Items { get; set; }
+        public List<ExcursionsServiceGetListShortItemRes> Items { get; init; }
     }
 }

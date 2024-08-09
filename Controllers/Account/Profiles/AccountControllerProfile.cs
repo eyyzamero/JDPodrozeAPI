@@ -11,8 +11,16 @@ namespace JDPodrozeAPI.Controllers.Account.Profiles
         public AccountControllerProfile()
         {
             CreateMap<AccountLoginReq, AccountServiceLoginReq>();
+            CreateMap<AccountLoginReq, IAccountServiceLoginReq>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<AccountServiceLoginReq>(src));
+
             CreateMap<AccountRegisterReq, AccountServiceRegisterReq>();
-            CreateMap<AccountServiceRegisterRes, AccountRegisterRes>();
+            CreateMap<AccountRegisterReq, IAccountServiceRegisterReq>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<AccountServiceRegisterReq>(src));
+
+            CreateMap<IAccountServiceRegisterRes, AccountRegisterRes>();
+            CreateMap<IAccountServiceRegisterRes, IAccountRegisterRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<AccountRegisterRes>(src));
         }
     }
 }

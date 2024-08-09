@@ -9,6 +9,8 @@ namespace JDPodrozeAPI.Controllers.Newsletter.Profiles
         public NewsletterControllerProfile()
         {
             CreateMap<NewsletterEnrollReq, NewsletterServiceEnrollReq>();
+            CreateMap<NewsletterEnrollReq, INewsletterServiceEnrollReq>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<NewsletterServiceEnrollReq>(src));
         }
     }
 }

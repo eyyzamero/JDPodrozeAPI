@@ -3,6 +3,7 @@ using JDPodrozeAPI.Controllers.Newsletter.Contracts.Requests;
 using JDPodrozeAPI.Services;
 using JDPodrozeAPI.Services.Newsletter.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace JDPodrozeAPI.Controllers.Newsletter
 {
@@ -21,10 +22,11 @@ namespace JDPodrozeAPI.Controllers.Newsletter
         }
 
         [HttpPost("Enroll")]
-        public IActionResult Enroll(NewsletterEnrollReq request)
+        [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> Enroll(NewsletterEnrollReq request)
         {
-            INewsletterServiceEnrollReq serviceReq = _mapper.Map<NewsletterServiceEnrollReq>(request);
-            _newsletterService.Enroll(serviceReq);
+            INewsletterServiceEnrollReq serviceReq = _mapper.Map<INewsletterServiceEnrollReq>(request);
+            await _newsletterService.EnrollAsync(serviceReq);
             return Ok();
         }
     }

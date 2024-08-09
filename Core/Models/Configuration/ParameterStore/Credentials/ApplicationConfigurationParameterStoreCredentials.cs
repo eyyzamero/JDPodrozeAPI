@@ -1,6 +1,6 @@
 ﻿namespace JDPodrozeAPI.Core.Models.Configuration.ParameterStore.Credentials
 {
-    public class ApplicationConfigurationParameterStoreCredentials
+    public record ApplicationConfigurationParameterStoreCredentials
     {
         public string AccessKey { get; init; }
 

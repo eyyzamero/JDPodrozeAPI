@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using JDPodrozeAPI.Core.Contexts.Users;
-using JDPodrozeAPI.Core.DTOs.Users;
+using JDPodrozeAPI.Core.DTOs;
+using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Core.Services.Cryptography;
 using JDPodrozeAPI.Core.Services.JWT;
 using JDPodrozeAPI.Services.Account.Contracts.Requests;
 using JDPodrozeAPI.Services.Account.Contracts.Responses;
-using Microsoft.EntityFrameworkCore;
 
 namespace JDPodrozeAPI.Services.Account
 {
@@ -13,57 +12,47 @@ namespace JDPodrozeAPI.Services.Account
     {
         private readonly IMapper _mapper;
         private readonly ICryptographyService _cryptographyService;
-        private readonly UsersDbContext _usersDbContext;
+        private readonly IUsersRepository _usersRepository;
         private readonly IJWTService _jwtService;
 
-        public AccountService(IMapper mapper, ICryptographyService cryptographyService, UsersDbContext usersDbContext, IJWTService jwtService)
+        public AccountService(IMapper mapper, ICryptographyService cryptographyService, IUsersRepository usersRepository, IJWTService jwtService)
         {
             _mapper = mapper;
             _cryptographyService = cryptographyService;
-            _usersDbContext = usersDbContext;
+            _usersRepository = usersRepository;
             _jwtService = jwtService;
         }
 
-        public string? TryToLogin(IAccountServiceLoginReq request)
+        public async Task<string?> TryToLoginAsync(IAccountServiceLoginReq request)
         {
-            string? response = null;
-            
-            UserDTO? user = _usersDbContext.Users.SingleOrDefault(x => x.Login == request.Login);
+            UserDTO? user = await _usersRepository.GetUserByLoginAsync(request.Login);
 
-            if (user != null)
-                if (_cryptographyService.Verify(request.Password, user.Password))
-                    response = _CreateToken(user);
+            if (user is not null && await _cryptographyService.VerifyAsync(request.Password, user.Password))
+                return await _jwtService.CreateToken(user);
 
-            return response;
+            return null;
         }
 
-        public IAccountServiceRegisterRes Register(IAccountServiceRegisterReq request)
+        public async Task<IAccountServiceRegisterRes> RegisterAsync(IAccountServiceRegisterReq request)
         {
             UserDTO user = _mapper.Map<UserDTO>(request);
 
-            user.Password = _cryptographyService.Encrypt(user.Password);
+            user.Password = await _cryptographyService.EncryptAsync(user.Password);
 
-            _usersDbContext.Users.Add(user);
-            _usersDbContext.SaveChanges();
+            await _usersRepository.AddUserAsync(user);
+            await _usersRepository.SaveChangesAsync();
 
-            IAccountServiceRegisterRes response = _mapper.Map<AccountServiceRegisterRes>(user);
+            IAccountServiceRegisterRes response = _mapper.Map<IAccountServiceRegisterRes>(user);
 
             if (request.GetToken)
-                response.Token = _CreateToken(user);
+                response.Token = await _jwtService.CreateToken(user);
 
             return response;
         }
 
         public async Task<bool> IsLoginAvailable(string login)
         {
-            bool response = await _usersDbContext.Users.AnyAsync(x => x.Login.ToLower() == login.Trim().ToLower());
-            return !response;
-        }
-
-        private string _CreateToken(UserDTO user)
-        {
-            string response = _jwtService.CreateToken(user);
-            return response;
+            return await _usersRepository.IsLoginAvailable(login);
         }
     }
 }

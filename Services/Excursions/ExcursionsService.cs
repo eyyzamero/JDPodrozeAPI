@@ -68,47 +68,47 @@ namespace JDPodrozeAPI.Services.Excursions
             return response;
         }
 
-        public IExcursionsServiceGetListShortRes GetListShort()
+        public async Task<IExcursionsServiceGetListShortRes> GetListShortAsync()
         {
-            IList<ExcursionDTO> excursions = _excursionsDbContext.Excursions
+            IList<ExcursionDTO> excursions = await _excursionsDbContext.Excursions
+                .Include(x => x.Images)
                 .Where(x => x.Active && !x.IsTemplate && !x.IsDeleted)
                 .OrderBy(x => x.DateFrom)
-                .ToList();
+                .AsNoTracking()
+                .ToListAsync();
             
-            IExcursionsServiceGetListShortRes response = _mapper.Map<ExcursionsServiceGetListShortRes>(excursions);
+            IExcursionsServiceGetListShortRes response = _mapper.Map<IExcursionsServiceGetListShortRes>(excursions);
 
-            foreach (var excursion in response.Items)
-                excursion.ImageId = _excursionsDbContext.ExcursionsImages.Where(i => i.ExcursionId == excursion.Id).OrderBy(x => x.Order).Select(i => i.Id).FirstOrDefault();
-
-            _visitsService.Register(VisitType.HOME_PAGE, "Odwiedzono stronę główną");
+            await _visitsService.RegisterAsync(VisitType.HOME_PAGE, "Odwiedzono stronę główną");
             return response;
         }
 
-        public async Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool images = false, bool pickupPoints = false)
+        public async Task<IExcursionsServiceGetItemRes?> GetItem(int id, bool includeImages = false, bool includePickupPoints = false)
         {
-            IExcursionsServiceGetItemRes? response = null;
-            IQueryable<ExcursionDTO> excursions = _excursionsDbContext.Excursions.Include(x => x.Images);
+            IQueryable<ExcursionDTO> query = _excursionsDbContext.Excursions.Include(x => x.Images);
 
-            if (pickupPoints)
-                excursions = excursions.Include(x => x.PickupPoints);
+            if (includePickupPoints)
+                query = query.Include(x => x.PickupPoints);
 
-            ExcursionDTO? excursion = await excursions.SingleOrDefaultAsync(x => x.Id == id);
-                
-            if (excursion != null)
+            ExcursionDTO? excursion = await query.SingleOrDefaultAsync(x => x.Id == id);
+
+            if (excursion is null)
+                return null;
+
+            excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
+            IExcursionsServiceGetItemRes response = _mapper.Map<IExcursionsServiceGetItemRes>(excursion);
+
+            if (includeImages)
             {
-                excursion.Images = excursion.Images.OrderBy(x => x.Order).ToList();
-                response = _mapper.Map<ExcursionsServiceGetItemRes>(excursion);
-
-                if (images)
+                var imageTasks = response.Images.Select(async image =>
                 {
-                    foreach (var image in response.Images)
-                    {
-                        byte[] imageBytes = await _imagesService.GetImageAsync("Excursions", image.Id, "HD", "png");
-                        image.Base64 = Convert.ToBase64String(imageBytes);
-                    }
-                }
-                await _visitsService.Register(VisitType.EXCURSION_GET, $"Pobrano dane wycieczki (Id wycieczki: {response.Id})");
+                    byte[] imageBytes = await _imagesService.GetImageAsync("Excursions", image.Id, "HD", "png");
+                    image.Base64 = Convert.ToBase64String(imageBytes);
+                });
+                await Task.WhenAll(imageTasks);
             }
+
+            await _visitsService.RegisterAsync(VisitType.EXCURSION_GET, $"Pobrano dane wycieczki (Id wycieczki: {response.Id})");
             return response;
         }
 
@@ -232,7 +232,7 @@ namespace JDPodrozeAPI.Services.Excursions
                        body: OrdersEmailsTemplates.GetOrderConfirmationOfBookingSubmissionTraditionalTransfer(excursion.Title, booker.Surname, order.Price),
                        includeLogo: true
                     );
-                    _visitsService.Register(VisitType.EXCURSION_ENROLL, $"Zapisano na wycieczkę (Id wycieczki: {order.ExcursionId}, Id zamówienia: {order.OrderId})");
+                    _visitsService.RegisterAsync(VisitType.EXCURSION_ENROLL, $"Zapisano na wycieczkę (Id wycieczki: {order.ExcursionId}, Id zamówienia: {order.OrderId})");
                 }
                 return null;
             }

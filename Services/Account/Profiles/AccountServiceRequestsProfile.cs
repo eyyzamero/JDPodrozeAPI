@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using JDPodrozeAPI.Core.DTOs.Users;
+using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Services.Account.Contracts.Requests;
 
 namespace JDPodrozeAPI.Services.Account.Profiles
@@ -8,7 +8,7 @@ namespace JDPodrozeAPI.Services.Account.Profiles
     {
         public AccountServiceRequestsProfile()
         {
-            CreateMap<AccountServiceRegisterReq, UserDTO>();
+            CreateMap<IAccountServiceRegisterReq, UserDTO>();
         }
     }
 }

@@ -9,13 +9,19 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
     {
         public ExcursionsServiceResponsesProfile()
         {
+            //GetListShort
             CreateMap<ExcursionDTO, ExcursionsServiceGetListShortItemRes>()
                 .ForMember(dest => dest.DiscountPrice, opt => opt.MapFrom(src => src.DiscountPriceGross))
-                .IgnoreAllPropertiesWithAnInaccessibleSetter()
-                .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
-            
-            CreateMap<List<ExcursionDTO>, ExcursionsServiceGetListShortRes>()
+                .ForMember(x => x.ImageId, opt => opt.MapFrom(src => src.Images.OrderBy(x => x.Order).Select(x => x.Id).FirstOrDefault()));
+
+            CreateMap<ExcursionDTO, IExcursionsServiceGetListShortItemRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ExcursionsServiceGetListShortItemRes>(src));
+
+            CreateMap<IList<ExcursionDTO>, ExcursionsServiceGetListShortRes>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
+
+            CreateMap<IList<ExcursionDTO>, IExcursionsServiceGetListShortRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ExcursionsServiceGetListShortRes>(src));
 
             CreateMap<ExcursionImageDTO, ExcursionsServiceGetImageRes>();
 
@@ -34,6 +40,9 @@ namespace JDPodrozeAPI.Services.Excursions.Profiles
             CreateMap<ExcursionDTO, ExcursionsServiceGetItemRes>()
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.PriceGross))
                 .ForMember(dest => dest.DiscountPrice, opt => opt.MapFrom(src => src.DiscountPriceGross));
+
+            CreateMap<ExcursionDTO, IExcursionsServiceGetItemRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ExcursionsServiceGetItemRes>(src));
         }
     }
 }

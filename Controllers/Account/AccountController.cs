@@ -25,20 +25,20 @@ namespace JDPodrozeAPI.Controllers.Account
 
         [HttpPost("Login")]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.OK)]
-        public IActionResult Login([FromBody] AccountLoginReq request)
+        public async Task<IActionResult> Login([FromBody] AccountLoginReq request)
         {
-            IAccountServiceLoginReq serviceRequest = _mapper.Map<AccountServiceLoginReq>(request);
-            string? response = _accountService.TryToLogin(serviceRequest);
+            IAccountServiceLoginReq serviceRequest = _mapper.Map<IAccountServiceLoginReq>(request);
+            string? response = await _accountService.TryToLoginAsync(serviceRequest);
             return response != null ? Ok(response) : BadRequest("Invalid credentials");
         }
 
         [HttpPost("Register")]
         [ProducesResponseType(typeof(IAccountRegisterRes), (int) HttpStatusCode.OK)]
-        public IActionResult Register([FromBody] AccountRegisterReq request)
+        public async Task<IActionResult> Register([FromBody] AccountRegisterReq request)
         {
-            IAccountServiceRegisterReq serviceRequest = _mapper.Map<AccountServiceRegisterReq>(request);
-            IAccountServiceRegisterRes serviceResponse = _accountService.Register(serviceRequest);
-            IAccountRegisterRes response = _mapper.Map<AccountRegisterRes>(serviceResponse);
+            IAccountServiceRegisterReq serviceRequest = _mapper.Map<IAccountServiceRegisterReq>(request);
+            IAccountServiceRegisterRes serviceResponse = await _accountService.RegisterAsync(serviceRequest);
+            IAccountRegisterRes response = _mapper.Map<IAccountRegisterRes>(serviceResponse);
             return Ok(response);
         }
 

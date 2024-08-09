@@ -2,7 +2,7 @@
 using JDPodrozeAPI.Controllers.Orders.Contracts;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
-using JDPodrozeAPI.Core.DTOs.Users;
+using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Services.Orders.Contracts.Responses;
 
 namespace JDPodrozeAPI.Services.Orders.Profiles

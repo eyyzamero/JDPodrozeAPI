@@ -1,6 +1,6 @@
-﻿using JDPodrozeAPI.Core.Contexts;
-using JDPodrozeAPI.Core.DTOs;
+﻿using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.Enums;
+using JDPodrozeAPI.Core.Repositories;
 using System.Net;
 
 namespace JDPodrozeAPI.Services
@@ -8,15 +8,15 @@ namespace JDPodrozeAPI.Services
     public class VisitsService : IVisitsService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly VisitsDbContext _visitsDbContext;
+        private readonly IVisitsRepository _visitsRepository;
 
-        public VisitsService(IHttpContextAccessor httpContextAccessor, VisitsDbContext visitsDbContext)
+        public VisitsService(IHttpContextAccessor httpContextAccessor, IVisitsRepository visitsRepository)
         {
             _httpContextAccessor = httpContextAccessor;
-            _visitsDbContext = visitsDbContext;
+            _visitsRepository = visitsRepository;
         }
 
-        public async Task Register(VisitType type, string description)
+        public Task RegisterAsync(VisitType type, string description)
         {
             IPAddress? ip = _GetClientIpAddress();
 
@@ -31,9 +31,9 @@ namespace JDPodrozeAPI.Services
                     IP = ip!.ToString(),
                     DateAndTime = DateTime.Now
                 };
-                _visitsDbContext.Add(visit);
-                await _visitsDbContext.SaveChangesAsync();
+                return _visitsRepository.RegisterAsync(visit);
             }
+            return Task.CompletedTask;
         }
 
         private IPAddress? _GetClientIpAddress()
@@ -44,7 +44,6 @@ namespace JDPodrozeAPI.Services
                 var ipAddress = httpContext.Connection.RemoteIpAddress;
                 return ipAddress;
             }
-
             return null;
         }
 

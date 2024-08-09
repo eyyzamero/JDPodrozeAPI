@@ -1,4 +1,4 @@
-﻿using JDPodrozeAPI.Core.DTOs.Users;
+﻿using JDPodrozeAPI.Core.DTOs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

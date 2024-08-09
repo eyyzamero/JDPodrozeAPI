@@ -6,7 +6,7 @@ using JDPodrozeAPI.Core.Models.Configuration.SMTP;
 
 namespace JDPodrozeAPI.Core.Models.Configuration
 {
-    public class ApplicationConfiguration
+    public record ApplicationConfiguration
     {
         public ApplicationConfigurationParameterStore ParameterStore { get; init; }
         public ApplicationConfigurationAuthentication Authentication { get; init; }

@@ -2,11 +2,11 @@
 {
     public interface IAccountRegisterRes
     {
-        public int Id { get; set; }
-        public string Login { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Token { get; set; }
+        public int Id { get; init; }
+        public string Login { get; init; }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
+        public string Email { get; init; }
+        public string Token { get; init; }
     }
 }

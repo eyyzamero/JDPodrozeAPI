@@ -61,10 +61,10 @@ namespace JDPodrozeAPI.Controllers.Excursions
 
         [HttpGet("GetListShort")]
         [ProducesResponseType(typeof(IExcursionsGetListShortRes), (int) HttpStatusCode.OK)]
-        public IActionResult GetListShort()
+        public async Task<IActionResult> GetListShort()
         {
-            IExcursionsServiceGetListShortRes serviceResponse = _excursionsService.GetListShort();
-            IExcursionsGetListShortRes response = _mapper.Map<ExcursionsGetListShortRes>(serviceResponse);
+            IExcursionsServiceGetListShortRes serviceResponse = await _excursionsService.GetListShortAsync();
+            IExcursionsGetListShortRes response = _mapper.Map<IExcursionsGetListShortRes>(serviceResponse);
             return Ok(response);
         }
 
