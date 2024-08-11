@@ -2,13 +2,13 @@
 {
     public interface IOrdersServiceGetListItemRes
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public DateTime? DateFrom { get; set; }
-        public DateTime? DateTo { get; set; }
-        public decimal PriceGross { get; set; }
-        public bool IsActive { get; set; }
-        public int Seats { get; set; }
+        public int Id { get; init; }
+        public string Title { get; init; }
+        public DateTime? DateFrom { get; init; }
+        public DateTime? DateTo { get; init; }
+        public decimal PriceGross { get; init; }
+        public bool IsActive { get; init; }
+        public int Seats { get; init; }
         public int AvailableSeats { get; set; }
     }
 }

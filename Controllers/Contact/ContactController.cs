@@ -21,10 +21,10 @@ namespace JDPodrozeAPI.Controllers.Contact
         }
 
         [HttpPost("")]
-        public IActionResult Contact(ContactReq request)
+        public async Task<IActionResult> Contact(ContactReq request)
         {
             IContactServiceReq serviceRequest = _mapper.Map<ContactServiceReq>(request);
-            _contactService.SaveMessage(serviceRequest);
+            await _contactService.SaveMessageAsync(serviceRequest);
             return Ok();
         }
     }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using JDPodrozeAPI.Core.Contexts;
 using JDPodrozeAPI.Core.DTOs;
+using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Services.Contact.Contracts.Requests;
 
 namespace JDPodrozeAPI.Services
@@ -8,19 +8,18 @@ namespace JDPodrozeAPI.Services
     public class ContactService : IContactService
     {
         private readonly IMapper _mapper;
-        private readonly ContactDbContext _contactDbContext;
+        private readonly IContactRepository _contactRepository;
 
-        public ContactService(IMapper mapper, ContactDbContext contactDbContext)
+        public ContactService(IMapper mapper, IContactRepository contactRepository)
         {
             _mapper = mapper;
-            _contactDbContext = contactDbContext;
+            _contactRepository = contactRepository;
         }
 
-        public void SaveMessage(IContactServiceReq request)
+        public Task SaveMessageAsync(IContactServiceReq request)
         {
             ContactDTO message = _mapper.Map<ContactDTO>(request);
-            _contactDbContext.Messages.Add(message);
-            _contactDbContext.SaveChanges();
+            return _contactRepository.AddMessage(message);
         }
     }
 }

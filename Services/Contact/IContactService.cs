@@ -4,6 +4,6 @@ namespace JDPodrozeAPI.Services
 {
     public interface IContactService
     {
-        public void SaveMessage(IContactServiceReq request);
+        public Task SaveMessageAsync(IContactServiceReq request);
     }
 }

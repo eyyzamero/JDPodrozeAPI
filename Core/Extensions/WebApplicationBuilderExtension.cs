@@ -17,6 +17,7 @@ using JDPodrozeAPI.Core.Contexts.Users;
 using JDPodrozeAPI.Core.Models.Configuration;
 using JDPodrozeAPI.Core.Models.Configuration.ParameterStore.Credentials;
 using JDPodrozeAPI.Core.Repositories;
+using JDPodrozeAPI.Core.Repositories.Visits;
 using JDPodrozeAPI.Core.Services.Cryptography;
 using JDPodrozeAPI.Core.Services.JWT;
 using JDPodrozeAPI.Core.Validation.Extensions;
@@ -139,6 +140,9 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddSingleton<ICryptographyService, CryptographyService>();
             builder.Services.AddScoped<IUsersRepository, UsersRepository>();
             builder.Services.AddScoped<INewsletterRepository, NewsletterRepository>();
+            builder.Services.AddScoped<IVisitsRepository, VisitsRepository>();
+            builder.Services.AddScoped<IContactRepository, ContactRepository>();
+            builder.Services.AddScoped<IOrdersRepository, OrdersRepository>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IExcursionsService, ExcursionsService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();

@@ -16,10 +16,10 @@ namespace JDPodrozeAPI.Services
             _newsletterRepository = newsletterRepository;
         }
 
-        public async Task EnrollAsync(INewsletterServiceEnrollReq request)
+        public Task EnrollAsync(INewsletterServiceEnrollReq request)
         {
             NewsletterDTO newsletter = _mapper.Map<NewsletterDTO>(request);
-            await _newsletterRepository.AddNewsletterAsync(newsletter);
+            return _newsletterRepository.AddNewsletterAsync(newsletter);
         }
     }
 }
