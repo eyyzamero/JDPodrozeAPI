@@ -151,6 +151,7 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddScoped<IContactService, ContactService>();
             builder.Services.AddScoped<IImagesService, ImagesService>();
             builder.Services.AddScoped<IVisitsService, VisitsService>();
+            builder.Services.AddScoped<IUsersService, UsersService>();
         }
 
         public static void AddValidators(this WebApplicationBuilder builder)

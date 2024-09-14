@@ -25,5 +25,10 @@ namespace JDPodrozeAPI.Core.Repositories
         {
             return !(await _context.Users.AnyAsync(x => x.Login.ToLower() == login.Trim().ToLower()));
         } 
+
+        public Task<List<UserDTO>> GetList()
+        {
+            return _context.Users.ToListAsync();
+        }
     }
 }

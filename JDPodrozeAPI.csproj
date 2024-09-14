@@ -34,6 +34,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Controllers\Excursions\Contracts\Responses\GetList\Item\" />
+	  <Folder Include="Services\Users\Contracts\Requests\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,15 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace JDPodrozeAPI.Core.DTOs
+﻿namespace JDPodrozeAPI.Services.Users.Contracts.Responses
 {
-    public record UserDTO
+    public record UsersGetListUserRes : IUsersGetListUserRes
     {
-        [Key]
         public int Id { get; init; }
 
         public string Login { get; init; }
-
-        public string Password { get; set; }
 
         public string FirstName { get; init; }
 
