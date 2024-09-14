@@ -3,6 +3,7 @@
     public interface IAccountLoginReq
     {
         public string Login { get; init; }
+
         public string Password { get; init; }
     }
 }

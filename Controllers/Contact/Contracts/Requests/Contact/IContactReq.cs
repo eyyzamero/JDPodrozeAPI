@@ -1,6 +1,6 @@
-﻿namespace JDPodrozeAPI.Services.Contact.Contracts.Requests
+﻿namespace JDPodrozeAPI.Controllers.Contact.Contracts.Requests
 {
-    public interface IContactServiceReq
+    public interface IContactReq
     {
         public string NameAndSurname { get; init; }
 

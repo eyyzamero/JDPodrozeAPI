@@ -1,9 +1,11 @@
 ﻿namespace JDPodrozeAPI.Controllers.Excursions.Contracts.Requests
 {
-    public class ExcursionsAddImageReq : IExcursionsAddImageReq
+    public record ExcursionsAddImageReq : IExcursionsAddImageReq
     {
-        public string Type { get; set; }
-        public string Base64 { get; set; }
-        public string Name { get; set; }
+        public string Type { get; init; }
+
+        public string Base64 { get; init; }
+
+        public string Name { get; init; }
     }
 }

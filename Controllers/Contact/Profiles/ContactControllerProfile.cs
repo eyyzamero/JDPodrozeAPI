@@ -9,6 +9,8 @@ namespace JDPodrozeAPI.Controllers.Contact.Profiles
         public ContactControllerProfile()
         {
             CreateMap<ContactReq, ContactServiceReq>();
+            CreateMap<ContactReq, IContactServiceReq>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<ContactServiceReq>(src));
         }
     }
 }

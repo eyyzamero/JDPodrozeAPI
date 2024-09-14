@@ -3,6 +3,7 @@
 		public interface IExcursionsPickupPointBaseReq
 		{
 				public Guid Id { get; }
+
 				public string Name { get; }
 		}
 }

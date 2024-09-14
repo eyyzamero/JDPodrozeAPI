@@ -7,9 +7,12 @@ namespace JDPodrozeAPI.Core.DTOs
     {
         [Key]
         public Guid Id { get; set; }
+
         [ForeignKey("Excursion")]
         public int ExcursionId { get; set; }
+
         public string Name { get; set; }
+
         public virtual ExcursionDTO Excursion { get; set; }
     }
 }

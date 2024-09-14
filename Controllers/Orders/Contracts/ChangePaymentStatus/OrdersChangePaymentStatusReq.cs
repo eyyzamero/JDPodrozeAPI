@@ -1,7 +1,7 @@
 ﻿namespace JDPodrozeAPI.Controllers.Orders.Contracts
 {
-    public class OrdersChangePaymentStatusReq : IOrdersChangePaymentStatusReq
+    public record OrdersChangePaymentStatusReq : IOrdersChangePaymentStatusReq
     {
-        public char Status { get; set; }
+        public char Status { get; init; }
     }
 }

@@ -64,5 +64,10 @@ namespace JDPodrozeAPI.Services
         {
             await _ordersRepository.DeleteParticipant(participantId);
         }
+
+        public Task<bool> SetPickupPoint(IOrdersSetPickupPointReq request)
+        {
+            return _ordersRepository.SetPickupPoint(request.OrderId, request.PickupPointId);
+        }
     }
 }

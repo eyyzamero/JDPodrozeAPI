@@ -20,6 +20,7 @@ namespace JDPodrozeAPI.Core.Repositories
             IQueryable<ExcursionDTO> listQuery = _context.Excursions
                 .Include(x => x.Orders)
                 .ThenInclude(x => x.Participants)
+                .Include(x => x.PickupPoints)
                 .Where(x => x.Orders.Any());
 
             switch (active)
@@ -46,6 +47,7 @@ namespace JDPodrozeAPI.Core.Repositories
             ExcursionDTO excursion = await _context.Excursions
                .Include(x => x.Orders)
                .ThenInclude(x => x.Participants)
+               .Include(x => x.PickupPoints)
                .AsNoTracking()
                .SingleAsync(x => x.Id == excursionId);
 
@@ -119,6 +121,26 @@ namespace JDPodrozeAPI.Core.Repositories
                 _context.ExcursionsParticipants.Remove(excursionParticipant);
             }
             return _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> SetPickupPoint(Guid orderId, Guid pickupPointId)
+        {
+            ExcursionOrderDTO? order = await _context.ExcursionsOrders
+                .SingleOrDefaultAsync(x => x.OrderId == orderId);
+
+            if (order is null)
+                return false;
+
+            ExcursionPickupPointDTO? pickupPoint = await _context.ExcursionsPickupPoints
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == pickupPointId);
+        
+            if (pickupPoint is null)
+                return false;
+
+            order.PickupPointId = pickupPointId;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         private void _SumOrderPrice(ExcursionOrderDTO order, List<ExcursionParticipantDTO> participants)

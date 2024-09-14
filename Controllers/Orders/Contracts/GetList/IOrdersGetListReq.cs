@@ -4,6 +4,6 @@ namespace JDPodrozeAPI.Controllers.Orders.Contracts
 {
     public interface IOrdersGetListReq
     {
-        public OrdersListFilterActiveType Active { get; set; }
+        public OrdersListFilterActiveType Active { get; init; }
     }
 }

@@ -2,19 +2,32 @@
 {
     public class ExcursionsAddReq : IExcursionsAddReq
     {
-        public string Title { get; set; }
-        public string ShortDescription { get; set; }
-        public string Description { get; set; }
-        public bool Active { get; set; }
-        public bool InCarousel { get; set; }
-        public decimal Price { get; set; }
-        public bool Discount { get; set; }
-        public decimal DiscountPrice { get; set; }
-        public int Seats { get; set; }
-        public string? DateFrom { get; set; }
-        public string? DateTo { get; set; }
-        public bool IsTemplate { get; set; }
-        public List<ExcursionsAddImageReq> Images { get; set; }
-        public List<ExcursionsAddPickupPointReq> PickupPoints { get; set; }
+        public string Title { get; init; }
+
+        public string ShortDescription { get; init; }
+
+        public string Description { get; init; }
+
+        public bool Active { get; init; }
+
+        public bool InCarousel { get; init; }
+
+        public decimal Price { get; init; }
+
+        public bool Discount { get; init; }
+
+        public decimal DiscountPrice { get; init; }
+
+        public int Seats { get; init; }
+
+        public string? DateFrom { get; init; }
+
+        public string? DateTo { get; init; }
+
+        public bool IsTemplate { get; init; }
+
+        public List<ExcursionsAddImageReq> Images { get; init; }
+
+        public List<ExcursionsAddPickupPointReq> PickupPoints { get; init; }
     }
 }

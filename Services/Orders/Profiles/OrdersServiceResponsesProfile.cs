@@ -18,6 +18,11 @@ namespace JDPodrozeAPI.Services.Orders.Profiles
             CreateMap<ExcursionDTO, IOrdersServiceGetListItemRes>().AsProxy()
                 .ConvertUsing((src, dest, context) => context.Mapper.Map<OrdersServiceGetListItemRes>(src));
 
+            CreateMap<ExcursionPickupPointDTO, OrdersServiceGetListItemPickupPointRes>();
+
+            CreateMap<ExcursionPickupPointDTO, IOrdersServiceGetListItemPickupPointRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<OrdersServiceGetListItemPickupPointRes>(src));
+
             CreateMap<List<ExcursionDTO>, OrdersServiceGetListRes>()
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src));
 
@@ -25,6 +30,11 @@ namespace JDPodrozeAPI.Services.Orders.Profiles
                 .ConvertUsing((src, dest, context) => context.Mapper.Map<OrdersServiceGetListRes>(src));
 
             // GetExcursionOrdersWithDetails
+            CreateMap<ExcursionPickupPointDTO, OrdersGetExcursionOrderWithDetailsExcursionPickupPointRes>();
+
+            CreateMap<ExcursionPickupPointDTO, IOrdersGetExcursionOrderWithDetailsExcursionPickupPointRes>().AsProxy()
+                .ConvertUsing((src, dest, context) => context.Mapper.Map<OrdersGetExcursionOrderWithDetailsExcursionPickupPointRes>(src));
+
             CreateMap<ExcursionDTO, OrdersGetExcursionOrderWithDetailsExcursionRes>()
                 .ForMember(dest => dest.AvailableSeats, opt => opt.MapFrom(src => src.Seats - src.Orders.Sum(order => order.Participants.Count)));
 

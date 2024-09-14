@@ -1,9 +1,11 @@
 ﻿namespace JDPodrozeAPI.Services.Contact.Contracts.Requests
 {
-    public class ContactServiceReq : IContactServiceReq
+    public record ContactServiceReq : IContactServiceReq
     {
-        public string NameAndSurname { get; set; }
-        public string Email { get; set; }
-        public string Content { get; set; }
+        public string NameAndSurname { get; init; }
+
+        public string Email { get; init; }
+
+        public string Content { get; init; }
     }
 }

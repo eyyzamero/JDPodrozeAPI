@@ -2,6 +2,6 @@
 {
     public interface IOrdersChangePaymentStatusReq
     {
-        public char Status { get; set; }
+        public char Status { get; init; }
     }
 }

@@ -2,8 +2,10 @@
 {
     public interface IExcursionsAddImageReq
     {
-        public string Type { get; set; }
-        public string Base64 { get; set; }
-        public string Name { get; set; }
+        public string Type { get; init; }
+
+        public string Base64 { get; init; }
+
+        public string Name { get; init; }
     }
 }

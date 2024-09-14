@@ -62,5 +62,14 @@ namespace JDPodrozeAPI.Controllers.Orders
             await _ordersService.DeleteParticipant(participantId);
             return Ok();
         }
+
+        [HttpPost("SetPickupPoint")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SetPickupPoint([FromBody] OrdersSetPickupPointReq request)
+        {
+            bool response = await _ordersService.SetPickupPoint(request);
+            return response ? Ok() : NotFound();
+        }
     }
 }
