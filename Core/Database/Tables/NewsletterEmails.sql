@@ -1,0 +1,5 @@
+﻿CREATE TABLE [JDPodrozeDB].[dbo].[NewsletterEmails] (
+    Id INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_NewsletterEmails PRIMARY KEY CLUSTERED,
+    Email NVARCHAR(150) NOT NULL,
+    Name NVARCHAR(50) NOT NULL
+);
