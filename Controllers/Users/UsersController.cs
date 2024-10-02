@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Users.Contracts.Requests;
 using JDPodrozeAPI.Services;
 using JDPodrozeAPI.Services.Users.Contracts.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -21,10 +22,10 @@ namespace JDPodrozeAPI.Controllers.Users
             _usersService = usersService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult> GetList()
+        [HttpPost]
+        public async Task<ActionResult> GetList([FromBody] UsersGetListReq request)
         {
-            IUsersGetListRes response = await _usersService.GetList();
+            IUsersGetListRes response = await _usersService.GetList(request);
             return Ok(response);
         }
     }

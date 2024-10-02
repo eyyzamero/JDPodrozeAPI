@@ -6,7 +6,8 @@ namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests.Validators
     {
         public AccountIsLoginAvailableValidator()
         {
-            RuleFor(x => x.Login).NotNull().NotEmpty();
+            RuleFor(x => x.Login)
+                .NotEmpty();
         }
     }
 }

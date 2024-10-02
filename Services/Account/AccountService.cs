@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Account.Contracts.Requests;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Core.Services.Cryptography;
@@ -50,9 +51,36 @@ namespace JDPodrozeAPI.Services.Account
             return response;
         }
 
-        public async Task<bool> IsLoginAvailable(string login)
+        public async Task<bool> IsLoginAvailable(string login, string? currentLogin)
         {
-            return await _usersRepository.IsLoginAvailable(login);
+            return await _usersRepository.IsLoginAvailable(login, currentLogin);
+        }
+
+        public async Task<int?> AddOrEditAsync(IAccountAddOrEditReq request)
+        {
+            UserDTO user = _mapper.Map<UserDTO>(request);
+
+            if (request.Password != null)
+            {
+                user.Password = await _cryptographyService.EncryptAsync(user.Password);
+            }
+
+            if (request.Id != null)
+            {
+                await _usersRepository.UpdateUserAsync(user);
+            }
+            else
+            {
+                _usersRepository.AddUser(user);
+            }
+            await _usersRepository.SaveChangesAsync();
+            return request.Id == null ? user.Id : null;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _usersRepository.DeleteAsync(id);
+            await _usersRepository.SaveChangesAsync();
         }
     }
 }

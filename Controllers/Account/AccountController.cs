@@ -4,6 +4,7 @@ using JDPodrozeAPI.Controllers.Account.Contracts.Responses;
 using JDPodrozeAPI.Services.Account;
 using JDPodrozeAPI.Services.Account.Contracts.Requests;
 using JDPodrozeAPI.Services.Account.Contracts.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -46,8 +47,26 @@ namespace JDPodrozeAPI.Controllers.Account
         [ProducesResponseType(typeof(bool), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> IsLoginAvailable([FromBody] AccountIsLoginAvailableReq request)
         {
-            bool response = await _accountService.IsLoginAvailable(request.Login);
+            bool response = await _accountService.IsLoginAvailable(request.Login, request.CurrentLogin);
             return Ok(response);
+        }
+
+        [HttpPost("AddOrEdit")]
+        [ProducesResponseType(typeof(int?), (int) HttpStatusCode.OK)]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> AddOrEdit([FromBody] AccountAddOrEditReq request)
+        {
+            int? response = await _accountService.AddOrEditAsync(request);
+            return Ok(response);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _accountService.DeleteAsync(id);
+            return Ok();
         }
     }
 }

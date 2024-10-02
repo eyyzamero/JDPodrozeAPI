@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JDPodrozeAPI.Controllers.Users.Contracts.Requests;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.Repositories;
 using JDPodrozeAPI.Services.Users.Contracts.Responses;
@@ -16,9 +17,9 @@ namespace JDPodrozeAPI.Services
             _usersRepository = usersRepository;
         }
 
-        public async Task<IUsersGetListRes> GetList()
+        public async Task<IUsersGetListRes> GetList(IUsersGetListReq request)
         {
-            IEnumerable<UserDTO> users = await _usersRepository.GetList();
+            IEnumerable<UserDTO> users = await _usersRepository.GetList(request.SearchText);
             IUsersGetListRes response = _mapper.Map<IUsersGetListRes>(users);
             return response;
         }

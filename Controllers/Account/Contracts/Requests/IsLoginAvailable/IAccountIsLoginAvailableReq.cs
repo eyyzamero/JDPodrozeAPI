@@ -2,6 +2,8 @@
 {
     public interface IAccountIsLoginAvailableReq
     {
-        public string Login { get; set; }
+        public string Login { get; }
+
+        public string? CurrentLogin { get; }
     }
 }

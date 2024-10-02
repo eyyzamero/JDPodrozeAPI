@@ -2,9 +2,9 @@
 
 namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests.Validators
 {
-    public class AccountRegisterReqValidator : AbstractValidator<AccountRegisterReq>
+    public class AccountAddOrEditValidator : AbstractValidator<AccountAddOrEditReq>
     {
-        public AccountRegisterReqValidator()
+        public AccountAddOrEditValidator()
         {
             RuleFor(x => x.Login)
                 .NotEmpty().WithMessage("Login is required")
@@ -12,7 +12,9 @@ namespace JDPodrozeAPI.Controllers.Account.Contracts.Requests.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required")
-                .Length(8, 50).WithMessage("Password must be between 8 and 50 characters");
+                .Length(8, 50).WithMessage("Password must be between 8 and 50 characters")
+                .When(x => x.Id == null)
+                .When(x => string.IsNullOrEmpty(x.Password));
 
             RuleFor(x => x.FirstName)
                 .NotEmpty()

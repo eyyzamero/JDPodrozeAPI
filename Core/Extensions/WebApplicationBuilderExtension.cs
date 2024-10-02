@@ -11,6 +11,8 @@ using JDPodrozeAPI.Controllers.Excursions.Validators;
 using JDPodrozeAPI.Controllers.Excursions.Validators.Enroll;
 using JDPodrozeAPI.Controllers.Newsletter.Contracts.Requests;
 using JDPodrozeAPI.Controllers.Newsletter.Validators;
+using JDPodrozeAPI.Controllers.Users.Contracts.Requests;
+using JDPodrozeAPI.Controllers.Users.Validators;
 using JDPodrozeAPI.Core.Contexts;
 using JDPodrozeAPI.Core.Contexts.Excursions;
 using JDPodrozeAPI.Core.Contexts.Users;
@@ -85,21 +87,14 @@ namespace JDPodrozeAPI.Core.Extensions
                 });
             });
 
-            builder.Services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidIssuer = builder.Configuration["Authentication:Issuer"],
-                ValidAudience = builder.Configuration["Authentication:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SigningKey"])),
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true
-            });
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration["Authentication:Issuer"],
+                    ValidAudience = builder.Configuration["Authentication:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:SigningKey"])),
+                    ValidateIssuerSigningKey = true
+                });
 
             builder.Services.AddAuthorization();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -162,6 +157,7 @@ namespace JDPodrozeAPI.Core.Extensions
             builder.Services.AddTransient<IValidator<NewsletterEnrollReq>, NewsletterEnrollReqValidator>();
             builder.Services.AddTransient<IValidator<ContactReq>, ContactReqValidator>();
             builder.Services.AddTransient<IValidator<ExcursionsGetListReq>, ExcursionsGetListReqValidator>();
+            builder.Services.AddTransient<IValidator<UsersGetListReq>, UsersGetListReqValidator>();
         }
 
         private static void _InitParameterStoreConfiguration(WebApplicationBuilder builder, IConfigurationRoot configuration)
