@@ -174,10 +174,12 @@ namespace JDPodrozeAPI.Services.Excursions
             await _excursionsDbContext.SaveChangesAsync();
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            _excursionsDbContext.Excursions.Where(x => x.Id == id).ExecuteDelete();
-            _excursionsDbContext.SaveChanges();
+            ExcursionDTO excursion = await _excursionsDbContext.Excursions.SingleAsync(x => x.Id == id);
+            excursion.IsDeleted = true;
+            _excursionsDbContext.Excursions.Update(excursion);
+            await _excursionsDbContext.SaveChangesAsync();
         }
 
         public Guid? Enroll(IExcursionsServiceEnrollReq request)

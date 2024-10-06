@@ -110,9 +110,9 @@ namespace JDPodrozeAPI.Controllers.Excursions
         [Authorize(Roles = "ADMINISTRATOR")]
         [HttpDelete("Delete/{id}")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _excursionsService.Delete(id);
+            await _excursionsService.Delete(id);
             return Ok();
         }
     }
