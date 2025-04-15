@@ -3,6 +3,7 @@ using JDPodrozeAPI.Controllers.Orders.Contracts;
 using JDPodrozeAPI.Core.DTOs;
 using JDPodrozeAPI.Core.DTOs.Excursions;
 using JDPodrozeAPI.Services.Orders.Contracts.Responses;
+using System.Globalization;
 
 namespace JDPodrozeAPI.Services.Orders.Profiles
 {
@@ -67,7 +68,8 @@ namespace JDPodrozeAPI.Services.Orders.Profiles
 
             CreateMap<IOrdersAddOrEditParticipantReq, ExcursionParticipantDTO>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.BookerId == null ? src.Email : null))
-                .ForMember(dest => dest.TelephoneNumber, opt => opt.MapFrom(src => src.BookerId == null ? src.TelephoneNumber : null));
+                .ForMember(dest => dest.TelephoneNumber, opt => opt.MapFrom(src => src.BookerId == null ? src.TelephoneNumber : null))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => DateTime.ParseExact(src.BirthDate, "dd/MM/yyyy", CultureInfo.InvariantCulture)));
         }
     }
 }
